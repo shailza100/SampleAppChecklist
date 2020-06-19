@@ -1,6 +1,6 @@
 {
-    "id": "com.microsoft.test.shail2",
-    "name": "Checklist Demo(shail)2",
+    "id": "com.microsoft.test.shail4",
+    "name": "Checklist(shail)4",
     "description": "sample app",
     "provider": {
         "name": "Microsoft",
@@ -25,6 +25,5 @@
         "localeFiles": {
             "en-us": "strings/strings.json"
         }
-    },
-    "whitelistedUrlDomains": []
+    }
 }
