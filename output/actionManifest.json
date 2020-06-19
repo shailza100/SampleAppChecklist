@@ -1,0 +1,29 @@
+{
+    "id": "com.microsoft.test.shail4",
+    "name": "Checklist(shail)4",
+    "description": "sample app",
+    "provider": {
+        "name": "Microsoft",
+        "websiteUrl": "https://www.microsoft.com/",
+        "privacyUrl": "https://www.microsoft.com/privacy",
+        "termsOfUseUrl": "https://www.microsoft.com/app-tos"
+    },
+    "icon": "images/appIcon.png",
+    "version": "1.0.1",
+    "actionModel": "actionModel.json",
+    "views": {
+        "CardView": {
+            "sourceLocation": "json/cardView.json"
+        },
+        "LaunchView": {
+            "sourceLocation": "html/createView.html",
+            "header": "Checklist Create View"
+        }
+    },
+    "localizationInfo": {
+        "defaultLocale": "en-us",
+        "localeFiles": {
+            "en-us": "strings/strings.json"
+        }
+    }
+}
