@@ -2,7 +2,6 @@
     "name": "checklist",
     "version": "1.0.0",
     "description": "Checklist app",
-    "main": "CreateView.html",
     "scripts": {
         "build": "webpack --env.mode=dev --env.watch=false",
         "zip": "cd ./output && bestzip ./ActionPackage.zip *",

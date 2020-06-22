@@ -20,7 +20,7 @@
                 "spacing": "small"
             },
             {
-                "id": "Title",
+                "id": "Title2",
                 "type": "TextBlock",
                 "text": "Open items",
                 "size": "small",
@@ -34,22 +34,26 @@
                 "type": "Container",
                 "style": "emphasis",
                 "items": [{
-                    "type": "TextBlock",
-                    "text": "${(action.dataTables[0].dataColumns)}",
-                    "size": "medium",
-                    "wrap": true,
-                    "spacing": "medium"
-                }]
-            },
-            {
-                "id": "Summary",
-                "type": "TextBlock",
-                "text": "Responses: ${summary.rowCount}, Responders: ${summary.rowCreatorCount}",
-                "size": "small",
-                "weight": "bolder",
-                "maxLines": 2,
-                "wrap": true,
-                "spacing": "small"
+                        "type": "Input.Toggle",
+                        "id": "Item1",
+                        "title": "${action.dataTables[0].dataColumns[0].displayName}",
+                        "value": "false",
+                        "valueOn": "true",
+                        "valueOff": "false",
+                        "wrap": true
+
+                    },
+                    {
+                        "type": "Input.Toggle",
+                        "id": "Item2",
+                        "title": "${action.dataTables[0].dataColumns[1].displayName}",
+                        "value": "false",
+                        "valueOn": "true",
+                        "valueOff": "false",
+                        "wrap": true
+
+                    }
+                ]
             }
         ],
         "actions": [{

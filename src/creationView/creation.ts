@@ -27,7 +27,7 @@ function OnPageLoad() {
   footerDiv.appendChild(submit);
 
   addQuestionButton.addEventListener("click", function () {
-    addItem();
+    bodyDiv.appendChild(addItem());
   });
 
   submit.addEventListener("click", function () {
@@ -44,18 +44,32 @@ function createInputElement(ph: string, id: string) {
 }
 
 function addItem() {
+  var itemDiv = document.createElement("div");
+  var linebreak = document.createElement("br");
   var checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.id = "cid";
+
   var item = document.createElement("input");
   item.type = "item";
   item.setAttribute("id", itemsCount.toString());
   item.setAttribute("value", "");
-  var linebreak = document.createElement("br");
-  bodyDiv.appendChild(linebreak);
-  bodyDiv.appendChild(checkbox);
-  bodyDiv.appendChild(item);
+
+  var del = document.createElement("BUTTON");
+  del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+  del.addEventListener("click", function () {
+    itemDiv.style.display = "none";
+    // itemsCount--;
+    //itemDiv.remove();
+  });
+
+  itemDiv.appendChild(checkbox);
+  itemDiv.appendChild(item);
+  itemDiv.appendChild(del);
+
   itemsCount++;
+
+  return itemDiv;
 }
 
 function getItemsList() {
@@ -63,13 +77,13 @@ function getItemsList() {
   for (var i = 0; i < itemsCount; i++) {
     var val = {
       name: i.toString(),
-      valueType: String,
+      valueType: "Text",
       allowNullValue: false,
       displayName: (<HTMLInputElement>document.getElementById(i.toString()))
         .value,
+      options: [],
     };
     items.push(val);
-    console.log(val.displayName);
   }
   console.info("End getItemsList ");
   return items;
@@ -97,7 +111,9 @@ function createAction(actionPackageId) {
       },
     ],
   };
-  console.info(action);
+  console.info(
+    `Value of action.dataTables[0].dataColumns ${action.dataTables[0].dataColumns[0].displayName}`
+  );
 
   var request = new actionSDK.CreateAction.Request(action);
   actionSDK
@@ -106,7 +122,7 @@ function createAction(actionPackageId) {
       console.info("CreateAction - Response: " + JSON.stringify(response));
     })
     .catch(function (error) {
-      console.error("CreateAction - Error: " + JSON.stringify(error));
+      console.error("CreateAction - Error: " + error.message);
     });
   console.info("End createAction()");
 }
@@ -128,7 +144,7 @@ function submitFormNew() {
       createAction(response.context.actionPackageId);
     })
     .catch(function (error) {
-      console.error("GetContext - Error: " + JSON.stringify(error));
+      console.error("GetContext - Error: " + error.message);
     });
   console.info("End of SubmitFormNew");
 }

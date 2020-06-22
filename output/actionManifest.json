@@ -1,6 +1,6 @@
 {
-    "id": "com.microsoft.test.shail4",
-    "name": "Checklist(shail)4",
+    "id": "com.microsoft.test.shail5",
+    "name": "Checklist(shail)",
     "description": "sample app",
     "provider": {
         "name": "Microsoft",
@@ -9,7 +9,7 @@
         "termsOfUseUrl": "https://www.microsoft.com/app-tos"
     },
     "icon": "images/appIcon.png",
-    "version": "1.0.1",
+    "version": "1.0.28",
     "actionModel": "actionModel.json",
     "views": {
         "CardView": {
