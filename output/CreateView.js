@@ -97,6 +97,52 @@
 
 /***/ }),
 
+/***/ "./src/creationView/EnumContainer.ts":
+/*!*******************************************!*\
+  !*** ./src/creationView/EnumContainer.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChecklistItemState = exports.Status = exports.ChecklistGroupType = exports.ChecklistColumnType = void 0;
+var ChecklistColumnType;
+(function (ChecklistColumnType) {
+    ChecklistColumnType["checklistItem"] = "checklistItem";
+    /* status = "status",
+    completionTime = "completionTime",
+    completionUser = "completionUser",
+    latestEditTime = "latestEditTime",
+    latestEditUser = "latestEditUser",
+    creationTime = "creationTime",
+    creationUser = "creationUser",
+    deletionTime = "deletionTime",
+    deletionUser = "deletionUser",*/
+})(ChecklistColumnType = exports.ChecklistColumnType || (exports.ChecklistColumnType = {}));
+var ChecklistGroupType;
+(function (ChecklistGroupType) {
+    ChecklistGroupType["Open"] = "Open";
+    ChecklistGroupType["Completed"] = "Completed";
+    ChecklistGroupType["Deleted"] = "Deleted";
+    ChecklistGroupType["All"] = "All";
+})(ChecklistGroupType = exports.ChecklistGroupType || (exports.ChecklistGroupType = {}));
+var Status;
+(function (Status) {
+    Status["ACTIVE"] = "ACTIVE";
+    Status["COMPLETED"] = "COMPLETED";
+    Status["DELETED"] = "DELETED";
+})(Status = exports.Status || (exports.Status = {}));
+var ChecklistItemState;
+(function (ChecklistItemState) {
+    ChecklistItemState["GENERATED"] = "GENERATED";
+    ChecklistItemState["MODIFIED"] = "MODIFIED";
+})(ChecklistItemState = exports.ChecklistItemState || (exports.ChecklistItemState = {}));
+
+
+/***/ }),
+
 /***/ "./src/creationView/creation.ts":
 /*!**************************************!*\
   !*** ./src/creationView/creation.ts ***!
@@ -127,12 +173,132 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var actionSDK = __importStar(__webpack_require__(/*! action-sdk-sunny */ "./node_modules/action-sdk-sunny/dist/ActionSDK.min.js"));
+var EnumContainer_1 = __webpack_require__(/*! ./EnumContainer */ "./src/creationView/EnumContainer.ts");
 var root = document.getElementById("root");
 var bodyDiv = document.createElement("div");
 var footerDiv = document.createElement("div");
 var itemsCount = 0;
 var items = new Array();
+var row = {};
 OnPageLoad();
+function createAction(actionPackageId) {
+    console.info("start createAction()");
+    var columns = createChecklistColumns();
+    // var itemsList = getItemsList();
+    var action = {
+        id: generateGUID(),
+        actionPackageId: actionPackageId,
+        version: 1,
+        displayName: document.getElementById("ChecklistName")
+            .value,
+        expiryTime: new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
+        properties: [],
+        dataTables: [
+            {
+                name: "TestDataSet",
+                rowsVisibility: actionSDK.Visibility.All,
+                rowsEditable: false,
+                canUserAddMultipleItems: true,
+                dataColumns: columns,
+            },
+        ],
+    };
+    var request = new actionSDK.CreateAction.Request(action);
+    actionSDK
+        .executeApi(request)
+        .then(function (response) {
+        addDataRows(response.actionId);
+        //console.info("CreateAction - Response: " + JSON.stringify(response));
+    })
+        .catch(function (error) {
+        console.error("CreateAction - Error: " + error.message);
+    });
+    console.info("End createAction()");
+}
+/*function getItemsList() {
+  console.info("start getItemsList ");
+
+  for (var i = 0; i < itemsCount; i++) {
+    var val = {
+      name: "Checklist1",
+      valueType: "SingleOption",
+      allowNullValue: false,
+      displayName: (<HTMLInputElement>document.getElementById(i.toString()))
+        .value,
+      options: [],
+    };
+    items.push(val);
+  }
+  console.info("End getItemsList ");
+  return items;
+}*/
+//Add values for dataRows
+function addDataRows(actionId) {
+    //actionSDK.AddActionDataRow;
+    for (var i = 0; i < itemsCount; i++) {
+        var dataRow = {
+            id: generateGUID(),
+            actionId: actionId,
+            dataTableName: "TestDataSet",
+            columnValues: row,
+        };
+        var item = document.getElementById(i.toString()).value;
+        row[EnumContainer_1.ChecklistColumnType.checklistItem.toString()] = item;
+        // add Request
+        var request = new actionSDK.AddActionDataRow.Request(dataRow);
+        actionSDK
+            .executeApi(request)
+            .then(function (response) {
+            console.info("AddActionDataRow - Response: " + JSON.stringify(response));
+        })
+            .catch(function (error) {
+            console.error("AddActionDataRow - Error: " + error.message);
+        });
+    }
+}
+//Add values for dataColumns
+function createChecklistColumns() {
+    var columns = new Array();
+    for (var item in EnumContainer_1.ChecklistColumnType) {
+        var checklistCol = {
+            name: item,
+            valueType: actionSDK.ActionDataColumnValueType.Text,
+            displayName: item,
+        };
+        if (item.match(EnumContainer_1.ChecklistColumnType.checklistItem)) {
+            checklistCol.allowNullValue = false;
+        }
+        columns.push(checklistCol);
+    }
+    return columns;
+}
+/*function statusParams(state: Status) {
+  var optionActive: actionSDK.ActionDataColumnOption = {
+    name: state.toString(),
+    displayName: state.toString(),
+  };
+  return optionActive;
+}*/
+function generateGUID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+        var r = (Math.random() * 16) | 0, v = c == "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
+function submitFormNew() {
+    console.info("Start submitFormNew");
+    actionSDK
+        .executeApi(new actionSDK.GetContext.Request())
+        .then(function (response) {
+        console.info("GetContext - Response: " + JSON.stringify(response));
+        createAction(response.context.actionPackageId);
+    })
+        .catch(function (error) {
+        console.error("GetContext - Error: " + error.message);
+    });
+    console.info("End of SubmitFormNew");
+}
+//HTML
 function OnPageLoad() {
     root.appendChild(createInputElement("Name your Checklist", "ChecklistName"));
     root.appendChild(bodyDiv);
@@ -183,74 +349,6 @@ function addItem() {
     itemDiv.appendChild(del);
     itemsCount++;
     return itemDiv;
-}
-function getItemsList() {
-    console.info("start getItemsList ");
-    for (var i = 0; i < itemsCount; i++) {
-        var val = {
-            name: i.toString(),
-            valueType: "Text",
-            allowNullValue: false,
-            displayName: document.getElementById(i.toString())
-                .value,
-            options: [],
-        };
-        items.push(val);
-    }
-    console.info("End getItemsList ");
-    return items;
-}
-function createAction(actionPackageId) {
-    console.info("start createAction()");
-    var itemsList = getItemsList();
-    var action = {
-        id: generateGUID(),
-        actionPackageId: actionPackageId,
-        version: 1,
-        displayName: document.getElementById("ChecklistName")
-            .value,
-        expiryTime: new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
-        properties: [],
-        dataTables: [
-            {
-                name: "TestDataSet",
-                rowsVisibility: actionSDK.Visibility.All,
-                rowsEditable: false,
-                canUserAddMultipleItems: true,
-                dataColumns: itemsList,
-            },
-        ],
-    };
-    console.info("Value of action.dataTables[0].dataColumns " + action.dataTables[0].dataColumns[0].displayName);
-    var request = new actionSDK.CreateAction.Request(action);
-    actionSDK
-        .executeApi(request)
-        .then(function (response) {
-        console.info("CreateAction - Response: " + JSON.stringify(response));
-    })
-        .catch(function (error) {
-        console.error("CreateAction - Error: " + error.message);
-    });
-    console.info("End createAction()");
-}
-function generateGUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-        var r = (Math.random() * 16) | 0, v = c == "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-}
-function submitFormNew() {
-    console.info("Start submitFormNew");
-    actionSDK
-        .executeApi(new actionSDK.GetContext.Request())
-        .then(function (response) {
-        console.info("GetContext - Response: " + JSON.stringify(response));
-        createAction(response.context.actionPackageId);
-    })
-        .catch(function (error) {
-        console.error("GetContext - Error: " + error.message);
-    });
-    console.info("End of SubmitFormNew");
 }
 
 

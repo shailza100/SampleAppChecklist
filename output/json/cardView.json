@@ -34,25 +34,12 @@
                 "type": "Container",
                 "style": "emphasis",
                 "items": [{
-                        "type": "Input.Toggle",
+                        "type": "TextBlock",
                         "id": "Item1",
-                        "title": "${action.dataTables[0].dataColumns[0].displayName}",
-                        "value": "false",
-                        "valueOn": "true",
-                        "valueOff": "false",
+                        "title": "checklist items",
                         "wrap": true
-
-                    },
-                    {
-                        "type": "Input.Toggle",
-                        "id": "Item2",
-                        "title": "${action.dataTables[0].dataColumns[1].displayName}",
-                        "value": "false",
-                        "valueOn": "true",
-                        "valueOff": "false",
-                        "wrap": true
-
                     }
+
                 ]
             }
         ],
