@@ -8,13 +8,13 @@ var itemsCount = 0;
 let items = new Array();
 let actionId = "";
 let row = {};
+var batchReq = [];
 
 OnPageLoad();
 
 function createAction(actionPackageId) {
   console.info("start createAction()");
   var columns = createChecklistColumns();
-  // var itemsList = getItemsList();
   var action = {
     id: generateGUID(),
     actionPackageId: actionPackageId,
@@ -34,11 +34,12 @@ function createAction(actionPackageId) {
     ],
   };
   actionId = action.id;
+
   var createAction = new actionSDK.CreateAction.Request(action);
-  var addDataRows = new actionSDK.AddActionDataRow.Request(getDataRows(actionId));
+  batchReq.push(createAction);
   console.info("CreateAction - Request: " + JSON.stringify(action));
-  var req = {};
-  var batchRequest = new actionSDK.BaseApi.BatchRequest([createAction, addDataRows]);
+  getAddRowsRequests(actionId);
+  var batchRequest = new actionSDK.BaseApi.BatchRequest(batchReq);
   actionSDK.executeBatchApi(batchRequest)
     .then(function (batchResponse) {
       console.info("Create Action and add rows BatchResponse: " + JSON.stringify(batchResponse));
@@ -51,8 +52,7 @@ function createAction(actionPackageId) {
 
 //Add values for dataRows
 
-function getDataRows(actionId) {
-
+function getAddRowsRequests(actionId) {
   for (var i = 0; i < itemsCount; i++) {
     var dataRow: actionSDK.ActionDataRow = {
       id: generateGUID(),
@@ -62,9 +62,9 @@ function getDataRows(actionId) {
     };
     var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
     row[ChecklistColumnType.checklistItem.toString()] = item;
+    var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
+    batchReq.push(addRowsRequest);
   }
-  console.info("AddActionDataRow - Request" + JSON.stringify(dataRow));
-  return dataRow;
 }
 
 //Add values for dataColumns

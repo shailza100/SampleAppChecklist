@@ -22,7 +22,7 @@
             {
                 "id": "Title2",
                 "type": "TextBlock",
-                "text": "Open items",
+                "text": "Open",
                 "size": "small",
                 "maxLines": 3,
                 "wrap": true,
@@ -36,8 +36,10 @@
                 "items": [{
                         "type": "TextBlock",
                         "id": "Item1",
-                        "title": "checklist items",
-                        "wrap": true
+                        "text": "Number of checklist items : ${count(dataRows)}",
+                        "wrap": true,
+                        "size": "medium",
+                        "spacing": "medium"
                     }
 
                 ]
@@ -48,7 +50,7 @@
                 "title": "Save Changes",
                 "command": "LaunchActionPackageView",
                 "parameters": {
-                    "viewName": "UpdateView"
+                    "viewName": "ResponseView"
                 }
             },
             {
@@ -64,6 +66,12 @@
     "data": {
         "action": {
             "command": "GetAction"
+        },
+        "dataRows": {
+            "command": "GetActionDataRows",
+            "parameters": {
+                "pageSize": 10
+            }
         },
         "summary": {
             "command": "GetActionDataRowsSummary",
