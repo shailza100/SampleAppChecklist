@@ -179,6 +179,7 @@ var bodyDiv = document.createElement("div");
 var footerDiv = document.createElement("div");
 var itemsCount = 0;
 var items = new Array();
+var actionId = "";
 var row = {};
 OnPageLoad();
 function createAction(actionPackageId) {
@@ -197,64 +198,40 @@ function createAction(actionPackageId) {
             {
                 name: "TestDataSet",
                 rowsVisibility: actionSDK.Visibility.All,
-                rowsEditable: false,
-                canUserAddMultipleItems: true,
-                dataColumns: columns,
+                rowsEditable: true,
+                canUserAddMultipleRows: true,
+                dataColumns: columns
             },
         ],
     };
-    var request = new actionSDK.CreateAction.Request(action);
-    actionSDK
-        .executeApi(request)
-        .then(function (response) {
-        addDataRows(response.actionId);
-        //console.info("CreateAction - Response: " + JSON.stringify(response));
+    actionId = action.id;
+    var createAction = new actionSDK.CreateAction.Request(action);
+    var addDataRows = new actionSDK.AddActionDataRow.Request(getDataRows(actionId));
+    console.info("CreateAction - Request: " + JSON.stringify(action));
+    var batchRequest = new actionSDK.BaseApi.BatchRequest([createAction, addDataRows]);
+    actionSDK.executeBatchApi(batchRequest)
+        .then(function (batchResponse) {
+        console.info("Create Action and add rows BatchResponse: " + JSON.stringify(batchResponse));
     })
         .catch(function (error) {
-        console.error("CreateAction - Error: " + error.message);
+        console.error("Create Action and add rows Error : " + JSON.stringify(error));
     });
     console.info("End createAction()");
 }
-/*function getItemsList() {
-  console.info("start getItemsList ");
-
-  for (var i = 0; i < itemsCount; i++) {
-    var val = {
-      name: "Checklist1",
-      valueType: "SingleOption",
-      allowNullValue: false,
-      displayName: (<HTMLInputElement>document.getElementById(i.toString()))
-        .value,
-      options: [],
-    };
-    items.push(val);
-  }
-  console.info("End getItemsList ");
-  return items;
-}*/
 //Add values for dataRows
-function addDataRows(actionId) {
-    //actionSDK.AddActionDataRow;
+function getDataRows(actionId) {
     for (var i = 0; i < itemsCount; i++) {
         var dataRow = {
             id: generateGUID(),
             actionId: actionId,
             dataTableName: "TestDataSet",
-            columnValues: row,
+            columnValues: row
         };
         var item = document.getElementById(i.toString()).value;
         row[EnumContainer_1.ChecklistColumnType.checklistItem.toString()] = item;
-        // add Request
-        var request = new actionSDK.AddActionDataRow.Request(dataRow);
-        actionSDK
-            .executeApi(request)
-            .then(function (response) {
-            console.info("AddActionDataRow - Response: " + JSON.stringify(response));
-        })
-            .catch(function (error) {
-            console.error("AddActionDataRow - Error: " + error.message);
-        });
     }
+    console.info("AddActionDataRow - Request" + JSON.stringify(dataRow));
+    return dataRow;
 }
 //Add values for dataColumns
 function createChecklistColumns() {
@@ -264,6 +241,7 @@ function createChecklistColumns() {
             name: item,
             valueType: actionSDK.ActionDataColumnValueType.Text,
             displayName: item,
+            allowNullValue: true
         };
         if (item.match(EnumContainer_1.ChecklistColumnType.checklistItem)) {
             checklistCol.allowNullValue = false;
