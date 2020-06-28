@@ -7,13 +7,12 @@ var footerDiv = document.createElement("div");
 var itemsCount = 0;
 let items = new Array();
 let actionId = "";
-let row = {};
 var batchReq = [];
 
 OnPageLoad();
 
 function createAction(actionPackageId) {
-  console.info("start createAction()");
+
   var columns = createChecklistColumns();
   var action = {
     id: generateGUID(),
@@ -39,6 +38,7 @@ function createAction(actionPackageId) {
   batchReq.push(createAction);
   console.info("CreateAction - Request: " + JSON.stringify(action));
   getAddRowsRequests(actionId);
+  console.info("BatchRequest - " + JSON.stringify(batchReq));
   var batchRequest = new actionSDK.BaseApi.BatchRequest(batchReq);
   actionSDK.executeBatchApi(batchRequest)
     .then(function (batchResponse) {
@@ -47,13 +47,14 @@ function createAction(actionPackageId) {
     .catch(function (error) {
       console.error("Create Action and add rows Error : " + JSON.stringify(error));
     })
-  console.info("End createAction()");
+
 }
 
 //Add values for dataRows
 
 function getAddRowsRequests(actionId) {
-  for (var i = 0; i < itemsCount; i++) {
+  let row = {};
+  for (var i = itemsCount - 1; i >= 0; i--) {
     var dataRow: actionSDK.ActionDataRow = {
       id: generateGUID(),
       actionId: actionId,
@@ -63,7 +64,9 @@ function getAddRowsRequests(actionId) {
     var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
     row[ChecklistColumnType.checklistItem.toString()] = item;
     var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
+    console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
     batchReq.push(addRowsRequest);
+    row = {};
   }
 }
 
@@ -102,7 +105,6 @@ function generateGUID() {
 }
 
 function submitFormNew() {
-  console.info("Start submitFormNew");
   actionSDK
     .executeApi(new actionSDK.GetContext.Request())
     .then(function (response: actionSDK.GetContext.Response) {
@@ -112,7 +114,7 @@ function submitFormNew() {
     .catch(function (error) {
       console.error("GetContext - Error: " + error.message);
     });
-  console.info("End of SubmitFormNew");
+
 }
 
 //HTML

@@ -22,7 +22,7 @@
             {
                 "id": "Title2",
                 "type": "TextBlock",
-                "text": "Open",
+                "text": "Open items",
                 "size": "small",
                 "maxLines": 3,
                 "wrap": true,

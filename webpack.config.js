@@ -5,7 +5,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = (env) => {
     var config = {
         entry: {
-            CreateView: "./src/creationView/creation.ts",
+            "CreateView": "./src/creationView/creation.ts",
+            "ResponseView": "./src/responseView/response.ts",
         },
         module: {
             rules: [{
