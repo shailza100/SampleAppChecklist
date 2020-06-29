@@ -132,8 +132,8 @@ function OnPageLoad() {
   root.appendChild(footerDiv);
 
   var linebreak = document.createElement("br");
-  var addQuestionButton = document.createElement("BUTTON"); // Create a <button> element
-  addQuestionButton.innerHTML = "Add Item";
+  var addItemButton = document.createElement("BUTTON"); // Create a <button> element
+  addItemButton.innerHTML = "Add Item";
 
   var submit = document.createElement("BUTTON"); // Create a <button> element
   submit.innerHTML = "Submit";
@@ -141,10 +141,10 @@ function OnPageLoad() {
 
   bodyDiv.appendChild(linebreak);
   footerDiv.appendChild(linebreak);
-  footerDiv.appendChild(addQuestionButton);
+  footerDiv.appendChild(addItemButton);
   footerDiv.appendChild(submit);
 
-  addQuestionButton.addEventListener("click", function () {
+  addItemButton.addEventListener("click", function () {
     bodyDiv.appendChild(addItem());
   });
 

@@ -7,6 +7,7 @@ module.exports = (env) => {
         entry: {
             "CreateView": "./src/creationView/creation.ts",
             "ResponseView": "./src/responseView/response.ts",
+            "UpdateView": "./src/updateView/update.ts"
         },
         module: {
             rules: [{
