@@ -9,7 +9,7 @@
         "termsOfUseUrl": "https://www.microsoft.com/app-tos"
     },
     "icon": "images/appIcon.png",
-    "version": "1.0.8",
+    "version": "1.0.20",
     "actionModel": "actionModel.json",
     "views": {
         "CardView": {

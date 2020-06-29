@@ -13,18 +13,18 @@ OnPageLoad();
 
 function createBody() {
     var title = document.createElement('h3');
-    var submit = document.createElement("BUTTON");
+    var save = document.createElement("BUTTON");
     title.innerHTML = actionInstance.displayName;
-    submit.innerHTML = "Submit";
-    UxUtils.setClass(submit, 'responseSubmitButton');
-    submit.addEventListener("click", function () {
-        //      submitForm();
+    save.innerHTML = "Save";
+    save.style.float = "right";
+    save.addEventListener("click", function () {
+        closeResponseView();
     });
     UxUtils.addElement(title, root);
     createChecklistView();
-    UxUtils.addElement(submit, root);
     UxUtils.addElement(UxUtils.lineBreak(), root);
     UxUtils.addElement(UxUtils.lineBreak(), root);
+    UxUtils.addElement(save, root);
 }
 
 //GetContext
@@ -53,32 +53,71 @@ function getActionInstance(actionId) {
             createBody();
         })
         .catch(function (error) {
-            console.log("Console log: Error: " + JSON.stringify(error));
+            console.error("BatchResponse: " + JSON.stringify(error));
         });
 }
 
+//UpdateActionDataRow
+function updateDataRow(datarow: actionSDK.ActionDataRow) {
+    actionSDK.executeApi(new actionSDK.UpdateActionDataRow.Request(datarow))
+        .then(function (response: actionSDK.UpdateActionDataRow.Response) {
+            console.info("UpdateActionDataRow - Response: " + JSON.stringify(response));
+        })
+        .catch(function (error) {
+            console.error("UpdateActionDataRow - Error: " + error.message);
+        });
+}
+
+// Update status 
+function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow) {
+    let statusCol = ChecklistColumnType.status.toString();
+    let currentStatus = row.columnValues[statusCol];
+    if (currentStatus == Status.ACTIVE) {
+        row.columnValues[ChecklistColumnType.status.toString()] = Status.COMPLETED;
+    }
+    else if (currentStatus == Status.COMPLETED) {
+        row.columnValues[ChecklistColumnType.status.toString()] = Status.ACTIVE;
+    }
+}
+
+function closeResponseView() {
+    actionSDK.executeApi(new actionSDK.CloseView.Request)
+        .then(function (response: actionSDK.CloseView.Response) {
+            console.info("CloseView - Response: " + JSON.stringify(response));
+        })
+        .catch(function (error) {
+            console.error("CloseView - Error: " + error.message);
+        });
+
+}
 
 //HTML 
 function createChecklistView() {
-    // console.info("ActionDataRows" + actionDataRows[0].columnValues[ChecklistColumnType.checklistItem]);
+    var column = ChecklistColumnType.checklistItem;
     actionDataRows.forEach((row) => {
-        var column = ChecklistColumnType.checklistItem;
-
         var itemDiv = document.createElement("div");
+        var linebreak = document.createElement("br");
         var checkbox = document.createElement("input");
-        checkbox.type = 'checkbox';
-        checkbox.id = 'cid';
-        checkbox.value = 'car';
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("id", row.id);
+        checkbox.addEventListener("click", function () {
+            //Update the row
+            console.info("value of data row BEFORE" + JSON.stringify(row));
+            updateStatusOfChecklistItem(row);
+            //Call UpdateActionDataRow
+            updateDataRow(row);
+            console.info("value of data row AFTER" + JSON.stringify(row));
+        });
 
-        var label = document.createElement('label')
-        label.htmlFor = 'car';
-        label.appendChild(document.createTextNode(row.columnValues[column]));
+        var item = document.createElement("input");
+        item.setAttribute("type", "item");
+        item.setAttribute("value", row.columnValues[column]);
+        item.setAttribute("readOnly", "true");
 
-        var br = document.createElement('br');
         itemDiv.appendChild(checkbox);
-        itemDiv.appendChild(label);
-        itemDiv.appendChild(br);
-        root.appendChild(itemDiv);
+        itemDiv.appendChild(item);
+        itemDiv.appendChild(linebreak);
+        root.appendChild(itemDiv)
     });
 }
 

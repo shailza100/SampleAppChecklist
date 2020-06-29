@@ -111,8 +111,8 @@ exports.ChecklistItemState = exports.Status = exports.ChecklistGroupType = expor
 var ChecklistColumnType;
 (function (ChecklistColumnType) {
     ChecklistColumnType["checklistItem"] = "checklistItem";
-    /* status = "status",
-    completionTime = "completionTime",
+    ChecklistColumnType["status"] = "status";
+    /*completionTime = "completionTime",
     completionUser = "completionUser",
     latestEditTime = "latestEditTime",
     latestEditUser = "latestEditUser",
@@ -229,10 +229,11 @@ function getAddRowsRequests(actionId) {
         };
         var item = document.getElementById(i.toString()).value;
         row[EnumContainer_1.ChecklistColumnType.checklistItem.toString()] = item;
+        row[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
         var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
         console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
         batchReq.push(addRowsRequest);
-        row = {};
+        row = {}; //Reset to push next row's data
     }
 }
 //Add values for dataColumns
@@ -245,20 +246,27 @@ function createChecklistColumns() {
             displayName: item,
             allowNullValue: true
         };
-        if (item.match(EnumContainer_1.ChecklistColumnType.checklistItem)) {
+        if (item.match(EnumContainer_1.ChecklistColumnType.checklistItem) || item.match(EnumContainer_1.ChecklistColumnType.status)) {
             checklistCol.allowNullValue = false;
+        }
+        if (item.match(EnumContainer_1.ChecklistColumnType.status)) {
+            checklistCol.valueType = actionSDK.ActionDataColumnValueType.SingleOption;
+            checklistCol.options = [];
+            checklistCol.options.push(statusParams(EnumContainer_1.Status.ACTIVE));
+            checklistCol.options.push(statusParams(EnumContainer_1.Status.COMPLETED));
+            checklistCol.options.push(statusParams(EnumContainer_1.Status.DELETED));
         }
         columns.push(checklistCol);
     }
     return columns;
 }
-/*function statusParams(state: Status) {
-  var optionActive: actionSDK.ActionDataColumnOption = {
-    name: state.toString(),
-    displayName: state.toString(),
-  };
-  return optionActive;
-}*/
+function statusParams(state) {
+    var optionActive = {
+        name: state.toString(),
+        displayName: state.toString(),
+    };
+    return optionActive;
+}
 function generateGUID() {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
         var r = (Math.random() * 16) | 0, v = c == "x" ? r : (r & 0x3) | 0x8;

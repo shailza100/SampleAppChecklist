@@ -34,15 +34,13 @@
                 "type": "Container",
                 "style": "emphasis",
                 "items": [{
-                        "type": "TextBlock",
-                        "id": "Item1",
-                        "text": "Number of checklist items : ${count(dataRows)}",
-                        "wrap": true,
-                        "size": "medium",
-                        "spacing": "medium"
-                    }
-
-                ]
+                    "type": "TextBlock",
+                    "id": "Item1",
+                    "text": "Number of checklist items : ${count(dataRows)}",
+                    "wrap": true,
+                    "size": "medium",
+                    "spacing": "medium"
+                }]
             }
         ],
         "actions": [{

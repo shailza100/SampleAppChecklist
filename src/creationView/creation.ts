@@ -63,10 +63,11 @@ function getAddRowsRequests(actionId) {
     };
     var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
     row[ChecklistColumnType.checklistItem.toString()] = item;
+    row[ChecklistColumnType.status.toString()] = Status.ACTIVE;
     var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
     console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
     batchReq.push(addRowsRequest);
-    row = {};
+    row = {};//Reset to push next row's data
   }
 }
 
@@ -80,21 +81,28 @@ function createChecklistColumns() {
       displayName: item,
       allowNullValue: true
     };
-    if (item.match(ChecklistColumnType.checklistItem)) {
+    if (item.match(ChecklistColumnType.checklistItem) || item.match(ChecklistColumnType.status)) {
       checklistCol.allowNullValue = false;
+    }
+    if (item.match(ChecklistColumnType.status)) {
+      checklistCol.valueType = actionSDK.ActionDataColumnValueType.SingleOption;
+      checklistCol.options = [];
+      checklistCol.options.push(statusParams(Status.ACTIVE));
+      checklistCol.options.push(statusParams(Status.COMPLETED));
+      checklistCol.options.push(statusParams(Status.DELETED));
     }
     columns.push(checklistCol);
   }
   return columns;
 }
 
-/*function statusParams(state: Status) {
+function statusParams(state: Status) {
   var optionActive: actionSDK.ActionDataColumnOption = {
     name: state.toString(),
     displayName: state.toString(),
   };
   return optionActive;
-}*/
+}
 
 function generateGUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {

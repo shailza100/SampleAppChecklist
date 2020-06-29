@@ -1,7 +1,7 @@
 export enum ChecklistColumnType {
   checklistItem = "checklistItem",
-  /* status = "status",
-  completionTime = "completionTime",
+  status = "status",
+  /*completionTime = "completionTime",
   completionUser = "completionUser",
   latestEditTime = "latestEditTime",
   latestEditUser = "latestEditUser",
