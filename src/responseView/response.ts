@@ -95,29 +95,31 @@ function closeResponseView() {
 function createChecklistView() {
     var column = ChecklistColumnType.checklistItem;
     actionDataRows.forEach((row) => {
-        var itemDiv = document.createElement("div");
-        var linebreak = document.createElement("br");
-        var checkbox = document.createElement("input");
-        checkbox.setAttribute("type", "checkbox");
-        checkbox.setAttribute("id", row.id);
-        checkbox.addEventListener("click", function () {
-            //Update the row
-            console.info("value of data row BEFORE" + JSON.stringify(row));
-            updateStatusOfChecklistItem(row);
-            //Call UpdateActionDataRow
-            updateDataRow(row);
-            console.info("value of data row AFTER" + JSON.stringify(row));
-        });
+        if (row.columnValues[ChecklistColumnType.status] == Status.ACTIVE) {
+            var itemDiv = document.createElement("div");
+            var linebreak = document.createElement("br");
+            var checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("id", row.id);
+            checkbox.addEventListener("click", function () {
+                //Update the row
+                console.info("value of data row BEFORE" + JSON.stringify(row));
+                updateStatusOfChecklistItem(row);
+                //Call UpdateActionDataRow
+                updateDataRow(row);
+                console.info("value of data row AFTER" + JSON.stringify(row));
+            });
 
-        var item = document.createElement("input");
-        item.setAttribute("type", "item");
-        item.setAttribute("value", row.columnValues[column]);
-        item.setAttribute("readOnly", "true");
+            var item = document.createElement("input");
+            item.setAttribute("type", "item");
+            item.setAttribute("value", row.columnValues[column]);
+            item.setAttribute("readOnly", "true");
 
-        itemDiv.appendChild(checkbox);
-        itemDiv.appendChild(item);
-        itemDiv.appendChild(linebreak);
-        root.appendChild(itemDiv)
+            itemDiv.appendChild(checkbox);
+            itemDiv.appendChild(item);
+            itemDiv.appendChild(linebreak);
+            root.appendChild(itemDiv)
+        }
     });
 }
 
