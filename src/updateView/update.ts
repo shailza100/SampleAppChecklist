@@ -12,6 +12,7 @@ let actionDataRows = null;
 let actionDataRowsLength = 0;
 let openItems = 0;
 let completedItems = 0;
+let batchUpdateReq = [];
 
 
 OnPageLoad();
@@ -22,8 +23,9 @@ function createBody() {
     title.innerHTML = actionInstance.displayName;
     save.innerHTML = "Save";
     save.style.float = "right";
+    //Call update row API on Save button
     save.addEventListener("click", function () {
-        closeResponseView();
+        updateDataRow();
     });
     UxUtils.addElement(title, root);
     UxUtils.addElement(openItemDiv, root);
@@ -82,18 +84,22 @@ function getActionInstance(actionId) {
         });
 }
 
-//UpdateActionDataRow
-function updateDataRow(datarow: actionSDK.ActionDataRow) {
-    actionSDK.executeApi(new actionSDK.UpdateActionDataRow.Request(datarow))
-        .then(function (response: actionSDK.UpdateActionDataRow.Response) {
-            console.info("UpdateActionDataRow - Response: " + JSON.stringify(response));
+//UpdateActionDataRow in Batch for all items
+function updateDataRow() {
+    //Post update close result view
+    var closeViewRequest = new actionSDK.CloseView.Request();
+    batchUpdateReq.push(closeViewRequest);
+    var batchRequest = new actionSDK.BaseApi.BatchRequest(batchUpdateReq);
+    actionSDK.executeBatchApi(batchRequest)
+        .then(function (batchResponse: actionSDK.BaseApi.BatchResponse) {
+            console.info("BatchResponse- Update: " + JSON.stringify(batchResponse));
         })
         .catch(function (error) {
-            console.error("UpdateActionDataRow - Error: " + error.message);
+            console.error("BatchResponse- Update: " + JSON.stringify(error));
         });
 }
 
-
+//Close Update view
 function closeResponseView() {
     actionSDK.executeApi(new actionSDK.CloseView.Request)
         .then(function (response: actionSDK.CloseView.Response) {
@@ -105,6 +111,25 @@ function closeResponseView() {
 
 }
 
+// Update status 
+function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow) {
+    let statusCol = ChecklistColumnType.status.toString();
+    let currentStatus = row.columnValues[statusCol];
+    if (currentStatus == Status.ACTIVE) {
+        row.columnValues[ChecklistColumnType.status.toString()] = Status.COMPLETED;
+    }
+    else if (currentStatus == Status.COMPLETED) {
+        row.columnValues[ChecklistColumnType.status.toString()] = Status.ACTIVE;
+    }
+}
+
+function createUpdateRequest(row: actionSDK.ActionDataRow) {
+    let updateReq = new actionSDK.UpdateActionDataRow.Request(row);
+    batchUpdateReq.push(updateReq);
+}
+
+
+//Get count of open and completed items
 function getCountOfItems() {
     actionDataRows.forEach((row) => {
 
@@ -117,6 +142,7 @@ function getCountOfItems() {
 
     })
 }
+
 
 //---HTML----
 
@@ -131,12 +157,11 @@ function createOpenItemsView() {
             checkbox.setAttribute("type", "checkbox");
             checkbox.setAttribute("id", row.id);
             checkbox.addEventListener("click", function () {
-                /* //Update the row
-                 console.info("value of data row BEFORE" + JSON.stringify(row));
-                 //updateStatusOfChecklistItem(row);
-                 //Call UpdateActionDataRow
-                 updateDataRow(row);
-                 console.info("value of data row AFTER" + JSON.stringify(row));*/
+                //Update the row
+                console.info("value of data row BEFORE" + JSON.stringify(row));
+                updateStatusOfChecklistItem(row);
+                createUpdateRequest(row);
+                console.info("value of data row AFTER" + JSON.stringify(row));
             });
 
             var item = document.createElement("input");
@@ -154,12 +179,12 @@ function createOpenItemsView() {
             openItemDiv.appendChild(itemDiv);
         }
     });
-    //Add item button
+    /*Add item button
     //  UxUtils.addElement(UxUtils.lineBreak(), openItemDiv);
     var addItemButton = document.createElement("BUTTON");
     addItemButton.innerHTML = "Add Item";
     addItemButton.style.float = "left";
-    //  openItemDiv.appendChild(addItemButton);
+    //  openItemDiv.appendChild(addItemButton);*/
 }
 
 //View for completed items
@@ -174,7 +199,11 @@ function createCompleteItemsView() {
             checkbox.setAttribute("id", row.id);
             checkbox.setAttribute("checked", "true");
             checkbox.addEventListener("click", function () {
-                //update status
+                //Update the row
+                console.info("value of data row BEFORE" + JSON.stringify(row));
+                updateStatusOfChecklistItem(row);
+                createUpdateRequest(row);
+                console.info("value of data row AFTER" + JSON.stringify(row));
             });
 
             var item = document.createElement("input");
@@ -187,7 +216,6 @@ function createCompleteItemsView() {
             completeItemDiv.appendChild(itemDiv);
         }
     });
-
 }
 
 

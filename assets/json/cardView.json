@@ -44,22 +44,13 @@
             }
         ],
         "actions": [{
-                "id": "SaveButton",
-                "title": "Save Changes",
-                "command": "LaunchActionPackageView",
-                "parameters": {
-                    "viewName": "ResponseView"
-                }
-            },
-            {
-                "id": "EditChecklistButton",
-                "title": "Edit Checklist",
-                "command": "LaunchActionPackageView",
-                "parameters": {
-                    "viewName": "UpdateView"
-                }
+            "id": "EditChecklistButton",
+            "title": "Edit Checklist",
+            "command": "LaunchActionPackageView",
+            "parameters": {
+                "viewName": "UpdateView"
             }
-        ]
+        }]
     },
     "data": {
         "action": {
