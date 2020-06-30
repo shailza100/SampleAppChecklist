@@ -10,6 +10,8 @@ var completeItemDiv = document.createElement("div");
 let actionInstance = null;
 let actionDataRows = null;
 let actionDataRowsLength = 0;
+let openItems = 0;
+let completedItems = 0;
 
 
 OnPageLoad();
@@ -27,12 +29,13 @@ function createBody() {
     UxUtils.addElement(openItemDiv, root);
     UxUtils.addElement(completeItemDiv, root);
 
+    getCountOfItems();
     var heading1 = document.createElement('h4');
-    heading1.innerHTML = "Open items";
+    heading1.innerHTML = "Open items(" + openItems + ")";
     openItemDiv.appendChild(heading1);
 
     var heading2 = document.createElement('h4');
-    heading2.innerHTML = "Completed items";
+    heading2.innerHTML = "Completed items(" + completedItems + ")";
     completeItemDiv.appendChild(heading2);
 
     //Add open items
@@ -102,6 +105,19 @@ function closeResponseView() {
 
 }
 
+function getCountOfItems() {
+    actionDataRows.forEach((row) => {
+
+        if (row.columnValues[ChecklistColumnType.status] == Status.ACTIVE) {
+            openItems++;
+        }
+        else if (row.columnValues[ChecklistColumnType.status] == Status.COMPLETED) {
+            completedItems++;
+        }
+
+    })
+}
+
 //---HTML----
 
 //View for open items
@@ -135,16 +151,15 @@ function createOpenItemsView() {
             itemDiv.appendChild(checkbox);
             itemDiv.appendChild(item);
             itemDiv.appendChild(del);
-
-            openItemDiv.appendChild(itemDiv)
+            openItemDiv.appendChild(itemDiv);
         }
     });
     //Add item button
-    UxUtils.addElement(UxUtils.lineBreak(), openItemDiv);
+    //  UxUtils.addElement(UxUtils.lineBreak(), openItemDiv);
     var addItemButton = document.createElement("BUTTON");
     addItemButton.innerHTML = "Add Item";
     addItemButton.style.float = "left";
-    openItemDiv.appendChild(addItemButton);
+    //  openItemDiv.appendChild(addItemButton);
 }
 
 //View for completed items

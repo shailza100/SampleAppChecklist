@@ -272,6 +272,8 @@ var completeItemDiv = document.createElement("div");
 var actionInstance = null;
 var actionDataRows = null;
 var actionDataRowsLength = 0;
+var openItems = 0;
+var completedItems = 0;
 OnPageLoad();
 function createBody() {
     var title = document.createElement('h3');
@@ -285,11 +287,12 @@ function createBody() {
     UxUtils_1.UxUtils.addElement(title, root);
     UxUtils_1.UxUtils.addElement(openItemDiv, root);
     UxUtils_1.UxUtils.addElement(completeItemDiv, root);
+    getCountOfItems();
     var heading1 = document.createElement('h4');
-    heading1.innerHTML = "Open items";
+    heading1.innerHTML = "Open items(" + openItems + ")";
     openItemDiv.appendChild(heading1);
     var heading2 = document.createElement('h4');
-    heading2.innerHTML = "Completed items";
+    heading2.innerHTML = "Completed items(" + completedItems + ")";
     completeItemDiv.appendChild(heading2);
     //Add open items
     createOpenItemsView();
@@ -348,6 +351,16 @@ function closeResponseView() {
         console.error("CloseView - Error: " + error.message);
     });
 }
+function getCountOfItems() {
+    actionDataRows.forEach(function (row) {
+        if (row.columnValues[EnumContainer_1.ChecklistColumnType.status] == EnumContainer_1.Status.ACTIVE) {
+            openItems++;
+        }
+        else if (row.columnValues[EnumContainer_1.ChecklistColumnType.status] == EnumContainer_1.Status.COMPLETED) {
+            completedItems++;
+        }
+    });
+}
 //---HTML----
 //View for open items
 function createOpenItemsView() {
@@ -380,11 +393,11 @@ function createOpenItemsView() {
         }
     });
     //Add item button
-    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.lineBreak(), openItemDiv);
+    //  UxUtils.addElement(UxUtils.lineBreak(), openItemDiv);
     var addItemButton = document.createElement("BUTTON");
     addItemButton.innerHTML = "Add Item";
     addItemButton.style.float = "left";
-    openItemDiv.appendChild(addItemButton);
+    //  openItemDiv.appendChild(addItemButton);
 }
 //View for completed items
 function createCompleteItemsView() {
