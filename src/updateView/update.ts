@@ -111,7 +111,7 @@ function closeResponseView() {
 
 }
 
-// Update status 
+// Update status for a row
 function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow) {
     let statusCol = ChecklistColumnType.status.toString();
     let currentStatus = row.columnValues[statusCol];
@@ -123,6 +123,14 @@ function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow) {
     }
 }
 
+//Update value for a row
+function updateValueOfChecklistItem(row: actionSDK.ActionDataRow, newVal) {
+    let itemCol = ChecklistColumnType.checklistItem.toString();
+    let currentStatus = row.columnValues[itemCol];
+    row.columnValues[itemCol] = newVal;
+}
+
+//create a new upadte req
 function createUpdateRequest(row: actionSDK.ActionDataRow) {
     let updateReq = new actionSDK.UpdateActionDataRow.Request(row);
     batchUpdateReq.push(updateReq);
@@ -143,6 +151,13 @@ function getCountOfItems() {
     })
 }
 
+//Check if value of item is updated or not
+function isValueUpdated(oldval, newval) {
+    console.info("Old value " + oldval + " new value " + newval);
+    if (oldval != newval)
+        return true;
+    else return false;
+}
 
 //---HTML----
 
@@ -153,25 +168,33 @@ function createOpenItemsView() {
         if (row.columnValues[ChecklistColumnType.status] == Status.ACTIVE) {
             var itemDiv = document.createElement("div");
             var linebreak = document.createElement("br");
+
             var checkbox = document.createElement("input");
             checkbox.setAttribute("type", "checkbox");
             checkbox.setAttribute("id", row.id);
             checkbox.addEventListener("click", function () {
                 //Update the row
-                console.info("value of data row BEFORE" + JSON.stringify(row));
+                console.info("value of data status BEFORE" + JSON.stringify(row));
                 updateStatusOfChecklistItem(row);
                 createUpdateRequest(row);
-                console.info("value of data row AFTER" + JSON.stringify(row));
+                console.info("value of data status AFTER" + JSON.stringify(row));
             });
 
             var item = document.createElement("input");
             item.setAttribute("type", "item");
             item.setAttribute("value", row.columnValues[column]);
-            item.setAttribute("readOnly", "true");
+            item.addEventListener("change", function () {
+                console.info("value of data value BEFORE" + JSON.stringify(row));
+                if (isValueUpdated(row.columnValues[column], item.value)) {
+                    updateValueOfChecklistItem(row, item.value);
+                    createUpdateRequest(row);
+                    console.info("value of data value AFTER" + JSON.stringify(row));
+                }
+            });
+
 
             var del = document.createElement("BUTTON");
             del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
-
 
             itemDiv.appendChild(checkbox);
             itemDiv.appendChild(item);

@@ -36,11 +36,21 @@
                 "items": [{
                     "type": "TextBlock",
                     "id": "Item1",
-                    "text": "Number of checklist items : ${count(dataRows)}",
+                    "text": "Number of checklist items : ${count(dataRow)}",
                     "wrap": true,
                     "size": "medium",
                     "spacing": "medium"
                 }]
+            },
+            {
+                "id": "LastModified",
+                "type": "TextBlock",
+                "text": "Last updated by ${creator[0].displayName}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
             }
         ],
         "actions": [{
@@ -56,7 +66,7 @@
         "action": {
             "command": "GetAction"
         },
-        "dataRows": {
+        "dataRow": {
             "command": "GetActionDataRows",
             "parameters": {
                 "pageSize": 10
