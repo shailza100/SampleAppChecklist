@@ -1,4 +1,9 @@
+import * as uuid from "uuid";
+
 export class Utils {
+    public static generateGUID(): string {
+        return uuid.v4();
+    }
 
     public static isEmptyString(str: string): boolean {
         return this.isEmptyObject(str);

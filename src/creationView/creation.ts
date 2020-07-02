@@ -1,13 +1,16 @@
 import * as actionSDK from "action-sdk-sunny";
 import { ChecklistColumnType, Status } from "./EnumContainer";
+import { Utils } from '../common/Utils';
 
 var root = document.getElementById("root");
 var bodyDiv = document.createElement("div");
 var footerDiv = document.createElement("div");
-var itemsCount = 0;
+
+let itemsCount = 0;
 let actionId = "";
-var batchReq = [];
+let batchReq = [];
 let isDeleted = {};
+let isCompleted = {};
 
 OnPageLoad();
 
@@ -15,7 +18,7 @@ function createAction(actionPackageId) {
 
   var columns = createChecklistColumns();
   var action = {
-    id: generateGUID(),
+    id: Utils.generateGUID(),
     actionPackageId: actionPackageId,
     version: 1,
     displayName: (<HTMLInputElement>document.getElementById("ChecklistName"))
@@ -55,17 +58,23 @@ function createAction(actionPackageId) {
 function getAddRowsRequests(actionId) {
   let row = {};
   for (var i = itemsCount - 1; i >= 0; i--) {
+    var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
+    var itemId = i.toString();
     //Not to add deleted items to rows
-    if (isDeleted[i.toString()] == false) {
+    if (isDeleted[i.toString()] == false && (Utils.isEmptyString(item.toString())) == false) {
       var dataRow: actionSDK.ActionDataRow = {
-        id: generateGUID(),
+        id: Utils.generateGUID(),
         actionId: actionId,
         dataTableName: "TestDataSet",
         columnValues: row
       };
-      var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
       row[ChecklistColumnType.checklistItem.toString()] = item;
-      row[ChecklistColumnType.status.toString()] = Status.ACTIVE;
+      if (isCompleted[itemId] == true) {
+        row[ChecklistColumnType.status.toString()] = Status.COMPLETED;
+      }
+      else {
+        row[ChecklistColumnType.status.toString()] = Status.ACTIVE;
+      }
       var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
       console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
       batchReq.push(addRowsRequest);
@@ -105,14 +114,6 @@ function statusParams(state: Status) {
     displayName: state.toString(),
   };
   return optionActive;
-}
-
-function generateGUID() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
 }
 
 function submitFormNew() {
@@ -167,9 +168,6 @@ function createInputElement(ph: string, id: string) {
 function addItem() {
   var itemDiv = document.createElement("div");
   var linebreak = document.createElement("br");
-  var checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.id = "cid";
 
   var item = document.createElement("input");
   item.type = "item";
@@ -177,6 +175,18 @@ function addItem() {
   item.setAttribute("value", "");
   let itemId = item.id;
   isDeleted[itemId] = false;
+  isCompleted[itemId] = false;
+
+  var checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.addEventListener("click", function () {
+    if (checkbox.checked == true) {
+      isCompleted[itemId] = true;
+    }
+    else {
+      isCompleted[itemId] = false;
+    }
+  });
 
   var del = document.createElement("BUTTON");
   del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
