@@ -359,20 +359,23 @@ function closeResponseView() {
     });
 }
 // Update status for a row
-function updateStatusOfChecklistItem(row) {
+function updateStatusOfChecklistItem(row, isDeleted) {
+    if (isDeleted === void 0) { isDeleted = false; }
     var statusCol = EnumContainer_1.ChecklistColumnType.status.toString();
     var currentStatus = row.columnValues[statusCol];
-    if (currentStatus == EnumContainer_1.Status.ACTIVE) {
+    if (currentStatus == EnumContainer_1.Status.ACTIVE && isDeleted == false) {
         row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.COMPLETED;
     }
-    else if (currentStatus == EnumContainer_1.Status.COMPLETED) {
+    else if (currentStatus == EnumContainer_1.Status.COMPLETED && isDeleted == false) {
         row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
+    }
+    else if (isDeleted == true) {
+        row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.DELETED;
     }
 }
 //Update value for a row
 function updateValueOfChecklistItem(row, newVal) {
     var itemCol = EnumContainer_1.ChecklistColumnType.checklistItem.toString();
-    var currentStatus = row.columnValues[itemCol];
     row.columnValues[itemCol] = newVal;
 }
 //create a new upadte req
@@ -430,6 +433,12 @@ function createOpenItemsView() {
             });
             var del = document.createElement("BUTTON");
             del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+            del.addEventListener("click", function () {
+                updateStatusOfChecklistItem(row, true);
+                item.disabled = true;
+                checkbox.disabled = true;
+                createUpdateRequest(row);
+            });
             itemDiv.appendChild(checkbox);
             itemDiv.appendChild(item);
             itemDiv.appendChild(del);

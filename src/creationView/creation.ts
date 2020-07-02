@@ -5,9 +5,9 @@ var root = document.getElementById("root");
 var bodyDiv = document.createElement("div");
 var footerDiv = document.createElement("div");
 var itemsCount = 0;
-let items = new Array();
 let actionId = "";
 var batchReq = [];
+let isDeleted = {};
 
 OnPageLoad();
 
@@ -55,19 +55,22 @@ function createAction(actionPackageId) {
 function getAddRowsRequests(actionId) {
   let row = {};
   for (var i = itemsCount - 1; i >= 0; i--) {
-    var dataRow: actionSDK.ActionDataRow = {
-      id: generateGUID(),
-      actionId: actionId,
-      dataTableName: "TestDataSet",
-      columnValues: row
-    };
-    var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
-    row[ChecklistColumnType.checklistItem.toString()] = item;
-    row[ChecklistColumnType.status.toString()] = Status.ACTIVE;
-    var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
-    console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
-    batchReq.push(addRowsRequest);
-    row = {};//Reset to push next row's data
+    //Not to add deleted items to rows
+    if (isDeleted[i.toString()] == false) {
+      var dataRow: actionSDK.ActionDataRow = {
+        id: generateGUID(),
+        actionId: actionId,
+        dataTableName: "TestDataSet",
+        columnValues: row
+      };
+      var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
+      row[ChecklistColumnType.checklistItem.toString()] = item;
+      row[ChecklistColumnType.status.toString()] = Status.ACTIVE;
+      var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
+      console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
+      batchReq.push(addRowsRequest);
+      row = {};//Reset to push next row's data
+    }
   }
 }
 
@@ -172,13 +175,14 @@ function addItem() {
   item.type = "item";
   item.setAttribute("id", itemsCount.toString());
   item.setAttribute("value", "");
+  let itemId = item.id;
+  isDeleted[itemId] = false;
 
   var del = document.createElement("BUTTON");
   del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
   del.addEventListener("click", function () {
+    isDeleted[itemId] = true;
     itemDiv.style.display = "none";
-    // itemsCount--;
-    //itemDiv.remove();
   });
 
   itemDiv.appendChild(checkbox);

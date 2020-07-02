@@ -112,21 +112,23 @@ function closeResponseView() {
 }
 
 // Update status for a row
-function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow) {
+function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow, isDeleted = false) {
     let statusCol = ChecklistColumnType.status.toString();
     let currentStatus = row.columnValues[statusCol];
-    if (currentStatus == Status.ACTIVE) {
+    if (currentStatus == Status.ACTIVE && isDeleted == false) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.COMPLETED;
     }
-    else if (currentStatus == Status.COMPLETED) {
+    else if (currentStatus == Status.COMPLETED && isDeleted == false) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.ACTIVE;
+    }
+    else if (isDeleted == true) {
+        row.columnValues[ChecklistColumnType.status.toString()] = Status.DELETED;
     }
 }
 
 //Update value for a row
 function updateValueOfChecklistItem(row: actionSDK.ActionDataRow, newVal) {
     let itemCol = ChecklistColumnType.checklistItem.toString();
-    let currentStatus = row.columnValues[itemCol];
     row.columnValues[itemCol] = newVal;
 }
 
@@ -195,6 +197,12 @@ function createOpenItemsView() {
 
             var del = document.createElement("BUTTON");
             del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+            del.addEventListener("click", function () {
+                updateStatusOfChecklistItem(row, true);
+                item.disabled = true;
+                checkbox.disabled = true;
+                createUpdateRequest(row);
+            });
 
             itemDiv.appendChild(checkbox);
             itemDiv.appendChild(item);

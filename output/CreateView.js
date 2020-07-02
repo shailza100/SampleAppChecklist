@@ -178,9 +178,9 @@ var root = document.getElementById("root");
 var bodyDiv = document.createElement("div");
 var footerDiv = document.createElement("div");
 var itemsCount = 0;
-var items = new Array();
 var actionId = "";
 var batchReq = [];
+var isDeleted = {};
 OnPageLoad();
 function createAction(actionPackageId) {
     var columns = createChecklistColumns();
@@ -221,19 +221,22 @@ function createAction(actionPackageId) {
 function getAddRowsRequests(actionId) {
     var row = {};
     for (var i = itemsCount - 1; i >= 0; i--) {
-        var dataRow = {
-            id: generateGUID(),
-            actionId: actionId,
-            dataTableName: "TestDataSet",
-            columnValues: row
-        };
-        var item = document.getElementById(i.toString()).value;
-        row[EnumContainer_1.ChecklistColumnType.checklistItem.toString()] = item;
-        row[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
-        var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
-        console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
-        batchReq.push(addRowsRequest);
-        row = {}; //Reset to push next row's data
+        //Not to add deleted items to rows
+        if (isDeleted[i.toString()] == false) {
+            var dataRow = {
+                id: generateGUID(),
+                actionId: actionId,
+                dataTableName: "TestDataSet",
+                columnValues: row
+            };
+            var item = document.getElementById(i.toString()).value;
+            row[EnumContainer_1.ChecklistColumnType.checklistItem.toString()] = item;
+            row[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
+            var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
+            console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
+            batchReq.push(addRowsRequest);
+            row = {}; //Reset to push next row's data
+        }
     }
 }
 //Add values for dataColumns
@@ -323,12 +326,14 @@ function addItem() {
     item.type = "item";
     item.setAttribute("id", itemsCount.toString());
     item.setAttribute("value", "");
+    var itemId = item.id;
+    console.info("ID of item deleted" + itemId + "and value of isDeleted" + isDeleted[itemId]);
+    isDeleted[itemId] = false;
     var del = document.createElement("BUTTON");
     del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
     del.addEventListener("click", function () {
+        isDeleted[itemId] = true;
         itemDiv.style.display = "none";
-        // itemsCount--;
-        //itemDiv.remove();
     });
     itemDiv.appendChild(checkbox);
     itemDiv.appendChild(item);
