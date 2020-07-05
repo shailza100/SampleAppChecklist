@@ -17,6 +17,7 @@ let batchUpdateReq = [];
 let countNewItems = 0;
 let isDeleted = {};
 let isCompleted = {};
+let userId = "";
 
 OnPageLoad();
 
@@ -64,6 +65,7 @@ function OnPageLoad() {
     actionSDK.executeApi(new actionSDK.GetContext.Request())
         .then(function (response: actionSDK.GetContext.Response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
+            userId = response.context.userId;
             getActionInstance(response.context.actionId);
         })
         .catch(function (error) {
@@ -107,6 +109,14 @@ function updateDataRow() {
         });
 }
 
+//Get user details who completed the item
+
+function getUserDetails(userId) {
+    var request = new actionSDK.GetSubscriptionMembers.Request(actionInstance.subscription, userId);
+    batchUpdateReq.push(request);
+}
+
+
 //Close Update view
 function closeResponseView() {
     actionSDK.executeApi(new actionSDK.CloseView.Request)
@@ -138,6 +148,13 @@ function createAddRowsRequests(actionId) {
             } else {
                 row[ChecklistColumnType.status.toString()] = Status.ACTIVE;
             }
+            row[ChecklistColumnType.creationUser.toString()] = userId;
+            row[ChecklistColumnType.creationTime.toString()] = new Date().getTime().toString();
+            if (row[ChecklistColumnType.status.toString()] == Status.COMPLETED) {
+                row[ChecklistColumnType.completionUser.toString()] = userId;
+                row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
+            }
+
             var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
             console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
             batchUpdateReq.push(addRowsRequest);
@@ -152,19 +169,27 @@ function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow, isDeleted = f
     let currentStatus = row.columnValues[statusCol];
     if (currentStatus == Status.ACTIVE && isDeleted == false) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.COMPLETED;
+        row[ChecklistColumnType.completionUser.toString()] = userId;
+        row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
     }
     else if (currentStatus == Status.COMPLETED && isDeleted == false) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.ACTIVE;
     }
     else if (isDeleted == true) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.DELETED;
+        row[ChecklistColumnType.deletionUser.toString()] = userId;
+        row[ChecklistColumnType.deletionTime.toString()] = new Date().getTime().toString();
     }
+    row[ChecklistColumnType.latestEditUser.toString()] = userId;
+    row[ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
 }
 
 //Update value for a row
 function updateValueOfChecklistItem(row: actionSDK.ActionDataRow, newVal) {
     let itemCol = ChecklistColumnType.checklistItem.toString();
     row.columnValues[itemCol] = newVal;
+    row[ChecklistColumnType.latestEditUser.toString()] = userId;
+    row[ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
 }
 
 //create a new upadte req

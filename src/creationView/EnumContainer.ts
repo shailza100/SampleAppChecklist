@@ -1,14 +1,14 @@
 export enum ChecklistColumnType {
   checklistItem = "checklistItem",
   status = "status",
-  /*completionTime = "completionTime",
+  completionTime = "completionTime",
   completionUser = "completionUser",
   latestEditTime = "latestEditTime",
   latestEditUser = "latestEditUser",
   creationTime = "creationTime",
   creationUser = "creationUser",
   deletionTime = "deletionTime",
-  deletionUser = "deletionUser",*/
+  deletionUser = "deletionUser"
 }
 export enum ChecklistGroupType {
   Open = "Open",

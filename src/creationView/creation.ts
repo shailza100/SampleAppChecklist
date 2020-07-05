@@ -11,6 +11,7 @@ let actionId = "";
 let batchReq = [];
 let isDeleted = {};
 let isCompleted = {};
+let userId = "";
 
 OnPageLoad();
 
@@ -54,7 +55,6 @@ function createAction(actionPackageId) {
 }
 
 //Add values for dataRows
-
 function getAddRowsRequests(actionId) {
   let row = {};
   for (var i = itemsCount - 1; i >= 0; i--) {
@@ -69,11 +69,18 @@ function getAddRowsRequests(actionId) {
         columnValues: row
       };
       row[ChecklistColumnType.checklistItem.toString()] = item;
+
       if (isCompleted[itemId] == true) {
         row[ChecklistColumnType.status.toString()] = Status.COMPLETED;
       }
       else {
         row[ChecklistColumnType.status.toString()] = Status.ACTIVE;
+      }
+      row[ChecklistColumnType.creationUser.toString()] = userId;
+      row[ChecklistColumnType.creationTime.toString()] = new Date().getTime().toString();
+      if (row[ChecklistColumnType.status.toString()] == Status.COMPLETED) {
+        row[ChecklistColumnType.completionUser.toString()] = userId;
+        row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
       }
       var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
       console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
@@ -93,7 +100,7 @@ function createChecklistColumns() {
       displayName: item,
       allowNullValue: true
     };
-    if (item.match(ChecklistColumnType.checklistItem) || item.match(ChecklistColumnType.status)) {
+    if (item.match(ChecklistColumnType.checklistItem) || item.match(ChecklistColumnType.status) || item.match(ChecklistColumnType.creationTime) || item.match(ChecklistColumnType.creationUser)) {
       checklistCol.allowNullValue = false;
     }
     if (item.match(ChecklistColumnType.status)) {
@@ -102,6 +109,12 @@ function createChecklistColumns() {
       checklistCol.options.push(statusParams(Status.ACTIVE));
       checklistCol.options.push(statusParams(Status.COMPLETED));
       checklistCol.options.push(statusParams(Status.DELETED));
+    }
+    if (item.match(ChecklistColumnType.completionUser) || item.match(ChecklistColumnType.latestEditUser) || item.match(ChecklistColumnType.creationUser) || item.match(ChecklistColumnType.deletionUser)) {
+      checklistCol.valueType = actionSDK.ActionDataColumnValueType.UserId;
+    }
+    if (item.match(ChecklistColumnType.completionTime) || item.match(ChecklistColumnType.latestEditTime) || item.match(ChecklistColumnType.creationTime) || item.match(ChecklistColumnType.deletionTime)) {
+      checklistCol.valueType = actionSDK.ActionDataColumnValueType.DateTime;
     }
     columns.push(checklistCol);
   }
@@ -121,6 +134,7 @@ function submitFormNew() {
     .executeApi(new actionSDK.GetContext.Request())
     .then(function (response: actionSDK.GetContext.Response) {
       console.info("GetContext - Response: " + JSON.stringify(response));
+      userId = response.context.userId;
       createAction(response.context.actionPackageId);
     })
     .catch(function (error) {

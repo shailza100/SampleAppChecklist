@@ -910,14 +910,14 @@ var ChecklistColumnType;
 (function (ChecklistColumnType) {
     ChecklistColumnType["checklistItem"] = "checklistItem";
     ChecklistColumnType["status"] = "status";
-    /*completionTime = "completionTime",
-    completionUser = "completionUser",
-    latestEditTime = "latestEditTime",
-    latestEditUser = "latestEditUser",
-    creationTime = "creationTime",
-    creationUser = "creationUser",
-    deletionTime = "deletionTime",
-    deletionUser = "deletionUser",*/
+    ChecklistColumnType["completionTime"] = "completionTime";
+    ChecklistColumnType["completionUser"] = "completionUser";
+    ChecklistColumnType["latestEditTime"] = "latestEditTime";
+    ChecklistColumnType["latestEditUser"] = "latestEditUser";
+    ChecklistColumnType["creationTime"] = "creationTime";
+    ChecklistColumnType["creationUser"] = "creationUser";
+    ChecklistColumnType["deletionTime"] = "deletionTime";
+    ChecklistColumnType["deletionUser"] = "deletionUser";
 })(ChecklistColumnType = exports.ChecklistColumnType || (exports.ChecklistColumnType = {}));
 var ChecklistGroupType;
 (function (ChecklistGroupType) {

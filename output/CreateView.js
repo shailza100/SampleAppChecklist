@@ -873,14 +873,14 @@ var ChecklistColumnType;
 (function (ChecklistColumnType) {
     ChecklistColumnType["checklistItem"] = "checklistItem";
     ChecklistColumnType["status"] = "status";
-    /*completionTime = "completionTime",
-    completionUser = "completionUser",
-    latestEditTime = "latestEditTime",
-    latestEditUser = "latestEditUser",
-    creationTime = "creationTime",
-    creationUser = "creationUser",
-    deletionTime = "deletionTime",
-    deletionUser = "deletionUser",*/
+    ChecklistColumnType["completionTime"] = "completionTime";
+    ChecklistColumnType["completionUser"] = "completionUser";
+    ChecklistColumnType["latestEditTime"] = "latestEditTime";
+    ChecklistColumnType["latestEditUser"] = "latestEditUser";
+    ChecklistColumnType["creationTime"] = "creationTime";
+    ChecklistColumnType["creationUser"] = "creationUser";
+    ChecklistColumnType["deletionTime"] = "deletionTime";
+    ChecklistColumnType["deletionUser"] = "deletionUser";
 })(ChecklistColumnType = exports.ChecklistColumnType || (exports.ChecklistColumnType = {}));
 var ChecklistGroupType;
 (function (ChecklistGroupType) {
@@ -944,6 +944,7 @@ var actionId = "";
 var batchReq = [];
 var isDeleted = {};
 var isCompleted = {};
+var userId = "";
 OnPageLoad();
 function createAction(actionPackageId) {
     var columns = createChecklistColumns();
@@ -1001,6 +1002,12 @@ function getAddRowsRequests(actionId) {
             else {
                 row[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
             }
+            row[EnumContainer_1.ChecklistColumnType.creationUser.toString()] = userId;
+            row[EnumContainer_1.ChecklistColumnType.creationTime.toString()] = new Date().getTime().toString();
+            if (row[EnumContainer_1.ChecklistColumnType.status.toString()] == EnumContainer_1.Status.COMPLETED) {
+                row[EnumContainer_1.ChecklistColumnType.completionUser.toString()] = userId;
+                row[EnumContainer_1.ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
+            }
             var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
             console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
             batchReq.push(addRowsRequest);
@@ -1018,7 +1025,7 @@ function createChecklistColumns() {
             displayName: item,
             allowNullValue: true
         };
-        if (item.match(EnumContainer_1.ChecklistColumnType.checklistItem) || item.match(EnumContainer_1.ChecklistColumnType.status)) {
+        if (item.match(EnumContainer_1.ChecklistColumnType.checklistItem) || item.match(EnumContainer_1.ChecklistColumnType.status) || item.match(EnumContainer_1.ChecklistColumnType.creationTime) || item.match(EnumContainer_1.ChecklistColumnType.creationUser)) {
             checklistCol.allowNullValue = false;
         }
         if (item.match(EnumContainer_1.ChecklistColumnType.status)) {
@@ -1027,6 +1034,12 @@ function createChecklistColumns() {
             checklistCol.options.push(statusParams(EnumContainer_1.Status.ACTIVE));
             checklistCol.options.push(statusParams(EnumContainer_1.Status.COMPLETED));
             checklistCol.options.push(statusParams(EnumContainer_1.Status.DELETED));
+        }
+        if (item.match(EnumContainer_1.ChecklistColumnType.completionUser) || item.match(EnumContainer_1.ChecklistColumnType.latestEditUser) || item.match(EnumContainer_1.ChecklistColumnType.creationUser) || item.match(EnumContainer_1.ChecklistColumnType.deletionUser)) {
+            checklistCol.valueType = actionSDK.ActionDataColumnValueType.UserId;
+        }
+        if (item.match(EnumContainer_1.ChecklistColumnType.completionTime) || item.match(EnumContainer_1.ChecklistColumnType.latestEditTime) || item.match(EnumContainer_1.ChecklistColumnType.creationTime) || item.match(EnumContainer_1.ChecklistColumnType.deletionTime)) {
+            checklistCol.valueType = actionSDK.ActionDataColumnValueType.DateTime;
         }
         columns.push(checklistCol);
     }
@@ -1044,6 +1057,7 @@ function submitFormNew() {
         .executeApi(new actionSDK.GetContext.Request())
         .then(function (response) {
         console.info("GetContext - Response: " + JSON.stringify(response));
+        userId = response.context.userId;
         createAction(response.context.actionPackageId);
     })
         .catch(function (error) {
