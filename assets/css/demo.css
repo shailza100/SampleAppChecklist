@@ -5,10 +5,11 @@ div#main {
     width: 830px;
     height: 650px;
     margin: 0 auto;
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Segoe UI";
 }
 
 div#root {
+    border-top: 5px;
     text-align: left;
     width: -webkit-fill-available;
     padding: 10px 50px 15px;
@@ -20,7 +21,9 @@ div#root {
 }
 
 hr {
-    margin-top: -5px;
+    margin-top: 5px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 label {
@@ -28,34 +31,48 @@ label {
     font-size: 16px;
 }
 
-input[type="text"] {
-    width: 100%;
+input[type="title"] {
+    border-radius: 2px;
+    width: 97%;
     margin-top: 5px;
-    height: 15px;
-    margin-bottom: 5px;
+    height: 20px;
+    margin-bottom: 10px;
     padding: 10px;
+    background-color: #F3F2F1;
+    border: none;
+    font-weight: bold;
+    font-size: 15px;
 }
 
 input[type="item"] {
-    width: 70%;
+    border-radius: 2px;
+    width: 80%;
     margin-top: 5px;
-    height: 10px;
+    height: 15px;
     margin-bottom: 5px;
     margin-right: 10px;
     padding: 10px;
+    background-color: #F3F2F1;
+    border: none;
+    font-size: 15px;
 }
 
 input[type="checkbox"] {
+    border-radius: 5px;
     width: 20px;
-    height: 20px;
+    height: 15px;
+    margin-right: 10px;
+    cursor: pointer;
+    /*height: 20px;
     padding: 10px;
     margin-top: 5px;
     margin-bottom: 5px;
-    margin-right: 10px;
+    */
+    border-color: black;
 }
 
 input:focus {
-    border-color: blue;
+    border: #fff;
 }
 
 textarea {
@@ -66,6 +83,20 @@ textarea {
     margin-top: 10px;
     height: 100px;
     resize: none;
+}
+
+.button {
+    background-color: #6264a7;
+    border: none;
+    border-radius: 2px;
+    color: white;
+    padding: 5px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    margin: 4px 2px;
+    cursor: pointer;
 }
 
 input[type="submit"] {

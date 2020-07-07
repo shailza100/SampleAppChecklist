@@ -145,26 +145,23 @@ function submitFormNew() {
 
 //HTML
 function OnPageLoad() {
-  root.appendChild(createInputElement("Name your Checklist", "ChecklistName"));
+
+  root.appendChild(document.createElement("hr"));
+  root.appendChild(createInputElement("Name your checklist", "ChecklistName"));
   root.appendChild(bodyDiv);
   root.appendChild(footerDiv);
 
   var linebreak = document.createElement("br");
-  var addItemButton = document.createElement("BUTTON"); // Create a <button> element
-  addItemButton.innerHTML = "Add Item";
 
   var submit = document.createElement("BUTTON"); // Create a <button> element
-  submit.innerHTML = "Submit";
+  submit.innerHTML = "Next";
   submit.style.float = "right";
+  submit.className = "button";
 
   bodyDiv.appendChild(linebreak);
   footerDiv.appendChild(linebreak);
-  footerDiv.appendChild(addItemButton);
+  footerDiv.appendChild(createAddItemDiv());
   footerDiv.appendChild(submit);
-
-  addItemButton.addEventListener("click", function () {
-    bodyDiv.appendChild(addItem());
-  });
 
   submit.addEventListener("click", function () {
     submitFormNew();
@@ -173,7 +170,7 @@ function OnPageLoad() {
 
 function createInputElement(ph: string, id: string) {
   var inputelement = document.createElement("input"); // Create Input Field for Name
-  inputelement.setAttribute("type", "text");
+  inputelement.setAttribute("type", "title");
   inputelement.setAttribute("id", id);
   inputelement.placeholder = ph;
   return inputelement;
@@ -203,7 +200,9 @@ function addItem() {
   });
 
   var del = document.createElement("BUTTON");
-  del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+  del.style.border = "none";
+  del.style.background = "none";
+  del.innerHTML = '<i class="fa fa-trash-o" style="font-size:15px"></i>';
   del.addEventListener("click", function () {
     isDeleted[itemId] = true;
     itemDiv.style.display = "none";
@@ -216,4 +215,27 @@ function addItem() {
   itemsCount++;
 
   return itemDiv;
+}
+
+function createAddItemDiv() {
+  var addItemDiv = document.createElement("div");
+  var plus = document.createElement("BUTTON");
+  plus.style.border = "none";
+  plus.style.background = "none";
+  plus.innerHTML = '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>';
+
+  var add = document.createElement("input");
+  //add.type = "addItem";
+  add.style.border = "none";
+  add.style.color = "#6264a7";
+  add.setAttribute("value", "Add Item");
+  add.setAttribute("readonly", "true");
+
+  addItemDiv.appendChild(plus);
+  addItemDiv.appendChild(add);
+
+  addItemDiv.addEventListener("click", function () {
+    bodyDiv.appendChild(addItem());
+  });
+  return addItemDiv;
 }

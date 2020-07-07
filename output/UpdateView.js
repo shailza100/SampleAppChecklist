@@ -986,6 +986,7 @@ var batchUpdateReq = [];
 var countNewItems = 0;
 var isDeleted = {};
 var isCompleted = {};
+var userId = "";
 OnPageLoad();
 function createBody() {
     var title = document.createElement('h3');
@@ -1024,6 +1025,7 @@ function OnPageLoad() {
     actionSDK.executeApi(new actionSDK.GetContext.Request())
         .then(function (response) {
         console.info("GetContext - Response: " + JSON.stringify(response));
+        userId = response.context.userId;
         getActionInstance(response.context.actionId);
     })
         .catch(function (error) {
@@ -1064,6 +1066,11 @@ function updateDataRow() {
         console.error("BatchResponse- Update: " + JSON.stringify(error));
     });
 }
+//Get user details who completed the item
+function getUserDetails(userId) {
+    var request = new actionSDK.GetSubscriptionMembers.Request(actionInstance.subscription, userId);
+    batchUpdateReq.push(request);
+}
 //Close Update view
 function closeResponseView() {
     actionSDK.executeApi(new actionSDK.CloseView.Request)
@@ -1095,6 +1102,12 @@ function createAddRowsRequests(actionId) {
             else {
                 row[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
             }
+            row[EnumContainer_1.ChecklistColumnType.creationUser.toString()] = userId;
+            row[EnumContainer_1.ChecklistColumnType.creationTime.toString()] = new Date().getTime().toString();
+            if (row[EnumContainer_1.ChecklistColumnType.status.toString()] == EnumContainer_1.Status.COMPLETED) {
+                row[EnumContainer_1.ChecklistColumnType.completionUser.toString()] = userId;
+                row[EnumContainer_1.ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
+            }
             var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
             console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
             batchUpdateReq.push(addRowsRequest);
@@ -1109,18 +1122,26 @@ function updateStatusOfChecklistItem(row, isDeleted) {
     var currentStatus = row.columnValues[statusCol];
     if (currentStatus == EnumContainer_1.Status.ACTIVE && isDeleted == false) {
         row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.COMPLETED;
+        row[EnumContainer_1.ChecklistColumnType.completionUser.toString()] = userId;
+        row[EnumContainer_1.ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
     }
     else if (currentStatus == EnumContainer_1.Status.COMPLETED && isDeleted == false) {
         row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
     }
     else if (isDeleted == true) {
         row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.DELETED;
+        row[EnumContainer_1.ChecklistColumnType.deletionUser.toString()] = userId;
+        row[EnumContainer_1.ChecklistColumnType.deletionTime.toString()] = new Date().getTime().toString();
     }
+    row[EnumContainer_1.ChecklistColumnType.latestEditUser.toString()] = userId;
+    row[EnumContainer_1.ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
 }
 //Update value for a row
 function updateValueOfChecklistItem(row, newVal) {
     var itemCol = EnumContainer_1.ChecklistColumnType.checklistItem.toString();
     row.columnValues[itemCol] = newVal;
+    row[EnumContainer_1.ChecklistColumnType.latestEditUser.toString()] = userId;
+    row[EnumContainer_1.ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
 }
 //create a new upadte req
 function createUpdateRequest(row) {

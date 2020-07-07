@@ -9,7 +9,7 @@
         "termsOfUseUrl": "https://www.microsoft.com/app-tos"
     },
     "icon": "images/appIcon.png",
-    "version": "1.0.15",
+    "version": "1.0.74",
     "actionModel": "actionModel.json",
     "views": {
         "CardView": {
@@ -17,7 +17,7 @@
         },
         "LaunchView": {
             "sourceLocation": "html/createView.html",
-            "header": "Checklist Create View"
+            "header": "Create a new checklist"
         },
         "ResponseView": {
             "sourceLocation": "html/responseView.html",
