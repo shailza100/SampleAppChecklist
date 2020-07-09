@@ -36,14 +36,21 @@ module.exports = (env) => {
         plugins: [
             new CleanWebpackPlugin(),
             new CopyWebpackPlugin([{
-                    from: "actionManifest.json",
+                    from: 'actionManifest.json',
+                    to: path.resolve(__dirname, 'output')
                 },
                 {
-                    from: "actionModel.json",
+                    from: 'actionModel.json',
+                    to: path.resolve(__dirname, 'output')
                 },
                 {
-                    from: "assets",
+                    from: 'views',
+                    to: path.resolve(__dirname, 'output')
                 },
+                {
+                    from: 'assets',
+                    to: path.resolve(__dirname, 'output')
+                }
             ]),
         ],
     };

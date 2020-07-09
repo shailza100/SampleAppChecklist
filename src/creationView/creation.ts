@@ -1,10 +1,13 @@
 import * as actionSDK from "action-sdk-sunny";
 import { ChecklistColumnType, Status } from "./EnumContainer";
 import { Utils } from '../common/Utils';
+import { UxUtils } from "../common/UxUtils";
 
 var root = document.getElementById("root");
-var bodyDiv = document.createElement("div");
-var footerDiv = document.createElement("div");
+var bodyDiv = UxUtils.getElement("div");
+var itemsDiv = UxUtils.getElement("div");
+var footerDiv = UxUtils.getElement("div");
+UxUtils.setClass(footerDiv, "footer");
 
 let itemsCount = 0;
 let actionId = "";
@@ -146,50 +149,42 @@ function submitFormNew() {
 //HTML
 function OnPageLoad() {
 
-  root.appendChild(document.createElement("hr"));
-  root.appendChild(createInputElement("Name your checklist", "ChecklistName"));
-  root.appendChild(bodyDiv);
-  root.appendChild(footerDiv);
+  UxUtils.addElement(UxUtils.getElement("hr"), root);
+  var title = UxUtils.createInputElement("Name your checklist", "ChecklistName", "title");
+  UxUtils.addElement(title, root);
+  UxUtils.addElement(bodyDiv, root);
+  UxUtils.addElement(itemsDiv, root);
+  UxUtils.addElement(footerDiv, root);
 
-  var linebreak = document.createElement("br");
-
-  var submit = document.createElement("BUTTON"); // Create a <button> element
-  submit.innerHTML = "Next";
+  var submit = UxUtils.getElement("BUTTON"); // Create a <button> element
+  UxUtils.setText(submit, "Next");
   submit.style.float = "right";
-  submit.className = "button";
+  UxUtils.setClass(submit, "button");
 
-  bodyDiv.appendChild(linebreak);
-  footerDiv.appendChild(linebreak);
-  footerDiv.appendChild(createAddItemDiv());
-  footerDiv.appendChild(submit);
+  UxUtils.addElement(UxUtils.lineBreak(), bodyDiv);
+  UxUtils.addElement(UxUtils.lineBreak(), itemsDiv);
+  UxUtils.addElement(createAddItemDiv(), itemsDiv);
+  UxUtils.addElement(UxUtils.getElement("hr"), footerDiv);
+  UxUtils.addElement(submit, footerDiv);
 
   submit.addEventListener("click", function () {
     submitFormNew();
   });
 }
 
-function createInputElement(ph: string, id: string) {
-  var inputelement = document.createElement("input"); // Create Input Field for Name
-  inputelement.setAttribute("type", "title");
-  inputelement.setAttribute("id", id);
-  inputelement.placeholder = ph;
-  return inputelement;
-}
-
 function addItem() {
-  var itemDiv = document.createElement("div");
-  var linebreak = document.createElement("br");
+  var itemDiv = UxUtils.getElement("div");
 
-  var item = document.createElement("input");
-  item.type = "item";
-  item.setAttribute("id", itemsCount.toString());
-  item.setAttribute("value", "");
+  var item = UxUtils.getElement("input");
+  UxUtils.addAttribute(item, { "type": "item", "value": "" });
+  UxUtils.setId(item, itemsCount.toString());
+
   let itemId = item.id;
   isDeleted[itemId] = false;
   isCompleted[itemId] = false;
 
   var checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
+  UxUtils.addAttribute(checkbox, { "type": "checkbox" });
   checkbox.addEventListener("click", function () {
     if (checkbox.checked == true) {
       isCompleted[itemId] = true;
@@ -199,18 +194,20 @@ function addItem() {
     }
   });
 
-  var del = document.createElement("BUTTON");
+  var del = UxUtils.getElement("BUTTON");
   del.style.border = "none";
   del.style.background = "none";
-  del.innerHTML = '<i class="fa fa-trash-o" style="font-size:15px"></i>';
+  UxUtils.setText(del, '<i class="fa fa-trash-o" style="font-size:15px"></i>');
+  // del.innerHTML = '<i class="fa fa-trash-o" style="font-size:15px"></i>';
+
   del.addEventListener("click", function () {
     isDeleted[itemId] = true;
     itemDiv.style.display = "none";
   });
 
-  itemDiv.appendChild(checkbox);
-  itemDiv.appendChild(item);
-  itemDiv.appendChild(del);
+  UxUtils.addElement(checkbox, itemDiv);
+  UxUtils.addElement(item, itemDiv);
+  UxUtils.addElement(del, itemDiv);
 
   itemsCount++;
 
@@ -218,24 +215,25 @@ function addItem() {
 }
 
 function createAddItemDiv() {
-  var addItemDiv = document.createElement("div");
-  var plus = document.createElement("BUTTON");
+  var addItemDiv = UxUtils.getElement("div");
+  var plus = UxUtils.getElement("BUTTON");
   plus.style.border = "none";
   plus.style.background = "none";
-  plus.innerHTML = '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>';
+  UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
+  //plus.innerHTML = '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>';
 
-  var add = document.createElement("input");
-  //add.type = "addItem";
+  var add = UxUtils.getElement("input");
   add.style.border = "none";
   add.style.color = "#6264a7";
-  add.setAttribute("value", "Add Item");
-  add.setAttribute("readonly", "true");
+  UxUtils.addAttribute(add, { "value": "Add Item", "readonly": "true" });
 
-  addItemDiv.appendChild(plus);
-  addItemDiv.appendChild(add);
+  UxUtils.addElement(plus, addItemDiv);
+  UxUtils.addElement(add, addItemDiv);
 
   addItemDiv.addEventListener("click", function () {
-    bodyDiv.appendChild(addItem());
+    UxUtils.addElement(addItem(), bodyDiv);
   });
+
+
   return addItemDiv;
 }

@@ -86,6 +86,17 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./assets/strings/en-us/strings.json":
+/*!*******************************************!*\
+  !*** ./assets/strings/en-us/strings.json ***!
+  \*******************************************/
+/*! exports provided: stringKey, _stringKey.comment, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"stringKey\":\"String Value\",\"_stringKey.comment\":\"String comment\"}");
+
+/***/ }),
+
 /***/ "./node_modules/action-sdk-sunny/dist/ActionSDK.min.js":
 /*!*************************************************************!*\
   !*** ./node_modules/action-sdk-sunny/dist/ActionSDK.min.js ***!
@@ -858,6 +869,582 @@ exports.Utils = Utils;
 
 /***/ }),
 
+/***/ "./src/common/UxUtils.ts":
+/*!*******************************!*\
+  !*** ./src/common/UxUtils.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UxUtils = void 0;
+var Utils_1 = __webpack_require__(/*! ./Utils */ "./src/common/Utils.ts");
+var strings_json_1 = __importDefault(__webpack_require__(/*! ../../assets/strings/en-us/strings.json */ "./assets/strings/en-us/strings.json"));
+var UxUtils = /** @class */ (function () {
+    function UxUtils() {
+    }
+    /*
+    *   @desc creates a alert box, with title, message to display and ok/cancel action and provide the styling
+    *       e.g. - showAlertDailog("alertTitle","Messgae","ok",OnOk,"cancel",onCancel;
+    *       here, onOk and onCancel are two functions
+    *   @param title - Title of alert: string
+    *   @param okButtonTitle - string to display for ok: string
+    *   @param okButtonAction - function() with action on okbutton click (Optional): function()
+    *   @param cancelButtonTitle - string to display for cancel button: string
+    *   @param cacelButtonAction - function() with action on cancelbutton (Optional): function()
+   */
+    UxUtils.showAlertDialog = function (title, message, okButtonTitle, okButtonAction, cancelButtonTitle, cancelButtonAction) {
+        var _this = this;
+        var fullScreenTransparentDiv = this.getFullScreenTransparentContainer();
+        var alertView = this.getDiv();
+        alertView.classList.add("alertView");
+        this.addElement(alertView, fullScreenTransparentDiv);
+        var alertTitleView = this.getLabel(title);
+        alertTitleView.classList.add("alertTitleDiv");
+        this.addElement(alertTitleView, alertView);
+        var alertMessageView = this.getLabel(message);
+        alertMessageView.classList.add("alertMessageView");
+        this.addElement(alertMessageView, alertView);
+        var alertBottomView = this.getDiv();
+        alertBottomView.classList.add("alertBottomView");
+        this.addElement(alertBottomView, alertView);
+        if (cancelButtonTitle != null && cancelButtonTitle != "") {
+            var cancelButton = this.getLabel(cancelButtonTitle);
+            cancelButton.classList.add("buttonAttributes");
+            cancelButton.onclick = function () {
+                _this.removeElement(fullScreenTransparentDiv, document.body);
+                if (cancelButtonAction)
+                    cancelButtonAction();
+            };
+            this.addElement(cancelButton, alertBottomView);
+        }
+        if (okButtonTitle != null && okButtonTitle != "") {
+            var okButton = this.getLabel(okButtonTitle);
+            okButton.classList.add("buttonAttributes");
+            okButton.onclick = function () {
+                _this.removeElement(fullScreenTransparentDiv, document.body);
+                if (okButtonAction)
+                    okButtonAction();
+            };
+            this.addElement(okButton, alertBottomView);
+        }
+        this.addElement(fullScreenTransparentDiv, document.body);
+    };
+    /*
+    *   @desc Create a spinner to show till the page is being loading and adds the css styling. You can add your own style attributes as well
+    *   @param attributes - css attributes (Optional): Object{}
+    *   @return div HTML element with spin animation
+    */
+    UxUtils.getLoadingSpinner = function (attributes) {
+        if (attributes === void 0) { attributes = null; }
+        var loadSpinner = this.getDiv();
+        loadSpinner.classList.add("loadingSpinnerAttributes");
+        Object.assign(loadSpinner, attributes);
+        return loadSpinner;
+    };
+    /*
+    *   @desc Creates a transparent full screen div using the stack order of an element.
+    *   @return div HTML element
+    */
+    UxUtils.getFullScreenTransparentContainer = function () {
+        var fullScreenTransparentContainer = this.getDiv();
+        fullScreenTransparentContainer.classList.add("fullScreenTransparentContainer");
+        return fullScreenTransparentContainer;
+    };
+    /*
+    *   @desc Creates div element positions in row-direction. It creates a div and appends the provided childrenElements horizontally.
+    *       e.g. - getHorizontalDiv([element1,element2],{"style1":"value1","style2":"value2"});
+    *   @param childrenElements - array of elements which will be positioned row-directional: any HTMLElement[]
+    *   @param attribute - css sttribute for elements (Optional): Object{}
+    *   @return div with element's flex direction row
+    */
+    UxUtils.getHorizontalDiv = function (childrenElements, attributes) {
+        if (attributes === void 0) { attributes = null; }
+        var div = this.getDiv();
+        div.classList.add("horizontalDivAttributes");
+        Object.assign(div, attributes);
+        for (var i = 0; i < childrenElements.length; i++) {
+            var childElement = childrenElements[i];
+            if (childElement) {
+                this.addElement(childElement, div);
+            }
+        }
+        return div;
+    };
+    /*
+    *   @desc Creates div element psotions in column-direction. It creates a div and appends the provided childrenElements vertically.
+    *       e.g. - getHorizontalDiv([element1,element2],{"style1":"value1","style2":"value2"});
+    *   @param childrenElements - array of elements which will be positioned row-directional: any HTMLElement[]
+    *   @param attribute - css sttribute for elements (Optional): Object{}
+    *   @return div with element's flex direction column
+    */
+    UxUtils.getVerticalDiv = function (childrenElements, attributes) {
+        if (attributes === void 0) { attributes = null; }
+        var div = this.getDiv();
+        div.classList.add("verticalDivAttributes");
+        Object.assign(div, attributes);
+        for (var i = 0; i < childrenElements.length; i++) {
+            var childElement = childrenElements[i];
+            if (childElement) {
+                this.addElement(childElement, div);
+            }
+        }
+        return div;
+    };
+    /*
+    *   @desc Creates a div which is sized according to its width and height properties,
+    *   but grows to absorb any extra free space in the flex container, and shrinks to its minimum size to fit the container.
+    *   @result div HTML element
+    */
+    UxUtils.getFlexibleSpace = function () {
+        return this.getDiv({ flex: "1 1 auto" });
+    };
+    /*
+    *   @desc Creates a div which is sized according to length provided
+    *   @param length - for height and width styling (Optional): string
+    *   @result div HTML element
+    */
+    UxUtils.getSpace = function (length) {
+        if (length === void 0) { length = this.DEFAULT_SPACE_LENGTH; }
+        var spaceDiv = this.getDiv();
+        this.addCSS(spaceDiv, { width: length, height: length, flex: "none" });
+        return spaceDiv;
+    };
+    /*
+    *   @desc Creates a div element and populates the element's text with the provided string.
+    *   @param text - text to display: string
+    *   @param attributes - css attributed for label (Optional): Object{}
+    *   @param showLink - Heightlight the text if the text is href (Optional): boolean
+    *   @result div HTML element
+    */
+    UxUtils.getLabel = function (text, attributes) {
+        if (text === void 0) { text = null; }
+        if (attributes === void 0) { attributes = null; }
+        var labelDiv = this.getDiv();
+        labelDiv.classList.add("labelAttributes");
+        Object.assign(labelDiv, attributes);
+        this.setText(labelDiv, text, true);
+        return labelDiv;
+    };
+    /*
+    *   @desc Creates a button HTML element
+    *       e.g. - getButton("Click me", testClick, {"style1":"value1","style2":"value2"});
+    *       testClick is clickEvent function
+    *   @param title - string on button: string
+    *   @param clickEvent - function for onclick event for button (Optional): function()
+    *   @param attribute - css sttribute for button (Optional): Object{}
+    *   @return button element
+    */
+    UxUtils.getButton = function (title, clickEvent, attributes) {
+        if (title === void 0) { title = null; }
+        if (clickEvent === void 0) { clickEvent = null; }
+        if (attributes === void 0) { attributes = null; }
+        var buttonDiv = this.getDiv(attributes);
+        this.setText(buttonDiv, title, true);
+        this.addClickEvent(buttonDiv, clickEvent);
+        return buttonDiv;
+    };
+    /*
+    *   @desc set the text content for HTML element, either innerHTML or innerText
+    *       e.g. - setText(element, "stringtodisplay");
+    *   @param element - HTMLElement for which the you want to set the text: HTMLElement
+    *   @param text - string to set (Optional): string
+    *   @param asHTML - if true then it will set .innerHTML else innerText (Optional): boolean
+    *   @param showLink - Heightlight the text if the text is href (Optional): boolean
+    */
+    UxUtils.setText = function (element, text, asHTML) {
+        if (text === void 0) { text = null; }
+        if (asHTML === void 0) { asHTML = true; }
+        if (asHTML) {
+            element.innerHTML = text.trim();
+        }
+        else {
+            element.innerText = text.trim();
+        }
+    };
+    /*
+    *   @desc It takes a image path as parameter, convert it to circular base 64 image and add provided css attributes
+    *   @param data - image path: string
+    *   @param dimen - image dimension (Optional): string
+    *   @param attributes - css attributes (Optional): Object{}
+    *   @return circular base 64 image;
+    */
+    UxUtils.getBase64CircularImage = function (data, dimen, attributes) {
+        if (data === void 0) { data = null; }
+        if (dimen === void 0) { dimen = this.DEFAULT_IMAGE_DIMEN; }
+        if (attributes === void 0) { attributes = null; }
+        var circularImage = this.getBase64Image(data);
+        circularImage.classList.add("circularImageAttributes");
+        Object.assign(circularImage, attributes);
+        return circularImage;
+    };
+    /*
+    *   @desc It takes a image path as parameter, convert it to circular image and add provided css attributes
+    *   @param data - image path: string
+    *   @param dimen - image dimension (Optional): string
+    *   @param attributes - css attributes (Optional): Object{}
+    *   @return circular image;
+    */
+    UxUtils.getCircularImage = function (path, dimen, attributes) {
+        if (path === void 0) { path = null; }
+        if (dimen === void 0) { dimen = this.DEFAULT_IMAGE_DIMEN; }
+        if (attributes === void 0) { attributes = null; }
+        var circularImage = this.getImage(path);
+        circularImage.classList.add("circularImageAttributes");
+        Object.assign(circularImage, attributes);
+        return circularImage;
+    };
+    /*
+    *   @desc It takes a image path as parameter, convert it to base 64 image and add provided css attributes
+    *   @param data - image path: string
+    *   @param dimen - image dimension (Optional): string
+    *   @param attributes - css attributes (Optional): Object{}
+    *   @return base64 converted image;
+    */
+    UxUtils.getBase64Image = function (data, attributes) {
+        if (data === void 0) { data = null; }
+        if (attributes === void 0) { attributes = null; }
+        return this.getImage(this.getBase64Src(data), attributes);
+    };
+    /*
+    *   @desc It takes a image path as parameter and use the base64 encoded string as a value of the src parameter, using a data:image/... construct.
+    *   @param data - image path: string
+    *   @return base64 converted source;
+    */
+    UxUtils.getBase64Src = function (data) {
+        return "data:image/png;base64," + data;
+    };
+    /*
+    *   @desc It takes a image path as parameter and add provided css attributes
+    *   @param data - image path: string
+    *   @param attributes - css attributes (Optional): Object{}
+    *   @return image HTML element;
+    */
+    UxUtils.getImage = function (path, attributes) {
+        if (path === void 0) { path = null; }
+        if (attributes === void 0) { attributes = null; }
+        var image = this.getElement("img");
+        image.src = path;
+        image.classList.add("imageAttributes");
+        Object.assign(image, attributes);
+        return image;
+    };
+    /*
+    *   @desc creates a HTML div element
+    *       e.g. - getDiv({"style1":"value1","style2":"value2"});
+    *   @param attributes - css attribute for the given div element (Optional): Object{}
+    *   @return div element
+    */
+    UxUtils.getDiv = function (attributes) {
+        if (attributes === void 0) { attributes = null; }
+        return this.getElement("div", attributes);
+    };
+    /*
+    *   @desc Creates a pre(preformatted text) element which preserves both spaces and line breaks.
+    *   @param attributes - css attribute for the given pre element (Optional): Object{}
+    *   @return div pre tagged element
+    */
+    UxUtils.getPrettyPrintDiv = function (attributes) {
+        if (attributes === void 0) { attributes = null; }
+        return this.getElement("pre", attributes);
+    };
+    /*
+    *   @desc Creates a canvas element with provided width and height to draw graphics on a web page.
+    *       e.g. - getCanvas(10,10,{"border":"1px solid #000000"})
+    *   @param width - width of canvas: number
+    *   @param height - height of canvas: number
+    *   @param attributes - css attribute for the given pre element (Optional): Object{}
+    *   @return HTML canvas element
+    */
+    UxUtils.getCanvas = function (width, height, attributes) {
+        if (attributes === void 0) { attributes = null; }
+        var canvas = this.createHiDPICanvas(width, height);
+        this.addCSS(canvas, attributes);
+        return canvas;
+    };
+    /*
+    *   @desc appends the element to it's parent element
+    *   @param element - child element: HTMLElement
+    *   @param parentElement - parent element (Optional) :HTMLElement
+    */
+    UxUtils.addElement = function (element, parentElement) {
+        if (element === void 0) { element = null; }
+        if (parentElement === void 0) { parentElement = null; }
+        if (element && parentElement) {
+            parentElement.appendChild(element);
+        }
+    };
+    /*
+    *   @desc It removes the provided child element from it's parentElement
+    *   @param element - child HTML element: HTMLElement
+    *   @param parentElement - parent HTML element (Optional): HTMLElement
+    */
+    UxUtils.removeElement = function (element, parentElement) {
+        if (element === void 0) { element = null; }
+        if (parentElement === void 0) { parentElement = null; }
+        if (element == null)
+            return;
+        var parent;
+        if (null == parentElement) {
+            parent = element.parentElement;
+        }
+        else {
+            parent = parentElement;
+        }
+        if (element && parent && parent.contains(element)) {
+            parent.removeChild(element);
+        }
+    };
+    /*
+    *   @desc It replaces one child element with another element under a parentElement
+    *   @param newElement - new child element to be appended: HTMLElement
+    *   @param oldElement - old child element appended to the parent element: HTMLElement
+    *   @param parentElement - parentElement, whose child element will be replaced: HTMLElement
+    */
+    UxUtils.replaceElement = function (newElement, oldElement, parentElement) {
+        if (newElement === void 0) { newElement = null; }
+        if (oldElement === void 0) { oldElement = null; }
+        if (parentElement === void 0) { parentElement = null; }
+        if (newElement && oldElement && parentElement) {
+            parentElement.replaceChild(newElement, oldElement);
+        }
+    };
+    /*
+    *   @desc It removes all the child element from the provided element
+    *   @param element - HTML element you want to remove: HTMLElement
+    */
+    UxUtils.clearElement = function (element) {
+        if (element === void 0) { element = null; }
+        while (element && element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    };
+    /*
+    *   @desc creates a HTML element of the type you will pass in argument
+    *       e.g. - getElement("span",{"style1":"value1"})
+    *   @param elementTag - element type to create: string
+    *   @params attributes - css attributes to add in the element (Optional): Object{}
+    *   @return HTML element of provided elementTag type
+   */
+    UxUtils.getElement = function (elementTag, attributes) {
+        if (attributes === void 0) { attributes = null; }
+        var element = document.createElement(elementTag);
+        this.addCSS(element, attributes);
+        return element;
+    };
+    /*
+   *   @desc Add click event on HTML element
+   *   @param element - HTMLElement fow which onclick need to be set: HTMLElement
+   *   @param clickEvent - function for the action on onclick: function()
+   */
+    UxUtils.addClickEvent = function (element, clickEvent) {
+        if (clickEvent != null) {
+            element.onclick = clickEvent;
+        }
+    };
+    /*
+    *   @desc Set the id for the HTML element
+    *       e.g. setId(element, "elementId")
+    *   @param element - HTMLElement for which you will set id: HTMLElement
+    *   @param id - element identifier: string
+    */
+    UxUtils.setId = function (element, id) {
+        if (!Utils_1.Utils.isEmptyString(id)) {
+            element.id = id;
+        }
+    };
+    /*
+    *   @desc Set the css for the HTML element
+    *       e.g. - setClass(element, "classnameone classnametwo")
+    *   @param element - HTMLElement in which you have to apply attributes: HTMLElement
+    *   @param classname - elemets's class name(s): string
+    */
+    UxUtils.setClass = function (element, className) {
+        if (!Utils_1.Utils.isEmptyString(className)) {
+            element.className = className;
+        }
+    };
+    /*
+    *   @desc set the css for the HTML element
+    *       e.g. - addCSS(element, { style1: value })
+    *   @param element - HTMLElement in which you have to apply attributes: HTMLElement
+    *   @param attributes - css attributes (Optional): Object{}
+    */
+    UxUtils.addCSS = function (element, attributes) {
+        if (attributes != null) {
+            var cssText = "";
+            if (!Utils_1.Utils.isEmptyString(element.style.cssText)) {
+                cssText = element.style.cssText;
+            }
+            for (var key in attributes) {
+                cssText += key + ":" + attributes[key] + ";";
+            }
+            element.style.cssText = cssText;
+        }
+    };
+    /*
+    *   @desc It sets tabs functionality using buttons, div, classes and data-* attributes
+    *       e.g. - setTabs("buttonClass", "buttonClass--active", "contentClass", "contentClass--active", "data-for-tab", "data-tab");
+    *   @param buttonClass: common classname of button: string
+    *   @param buttonClassActive: classname for button for which content will be shown(active): string
+    *   @param contentClass: common classname for the contents: string
+    *   @param contentClassActive: classname for the content to be displayed(active): string
+    *   @param OnButtonAttribute: Attribute for the button to fetch data active content class: string
+    *   @param onContentAttribute: Attribute for the content to display the data: string
+    */
+    UxUtils.setTabs = function (buttonClass, buttonClassActive, contentClass, contentClassActive, OnButtonAttribute, onContentAttribute) {
+        document.querySelectorAll("." + buttonClass).forEach(function (button) {
+            button.addEventListener("click", function () {
+                var barParent = button.parentElement;
+                var contentContainer = barParent.parentElement;
+                var tabNum = button.getAttribute(OnButtonAttribute);
+                var tabActive = contentContainer.querySelector("." + contentClass + "[" + onContentAttribute + "=\"" + tabNum + "\"]");
+                barParent.querySelectorAll("." + buttonClass).forEach(function (button) {
+                    button.classList.remove(buttonClassActive);
+                });
+                contentContainer.querySelectorAll("." + contentClass).forEach(function (tab) {
+                    tab.classList.remove(contentClassActive);
+                });
+                button.classList.add(buttonClassActive);
+                tabActive.classList.add(contentClassActive);
+            });
+        });
+    };
+    UxUtils.getPixelRatio = function () {
+        var ctx = document.createElement("canvas").getContext("2d"), dpr = window.devicePixelRatio || 1, bsr = ctx.webkitBackingStorePixelRatio ||
+            ctx.mozBackingStorePixelRatio ||
+            ctx.msBackingStorePixelRatio ||
+            ctx.oBackingStorePixelRatio ||
+            ctx.backingStorePixelRatio || 1;
+        return dpr / bsr;
+    };
+    ;
+    UxUtils.createHiDPICanvas = function (w, h, ratio) {
+        if (ratio === void 0) { ratio = 0; }
+        if (!ratio) {
+            ratio = this.getPixelRatio();
+        }
+        var can = document.createElement("canvas");
+        this.addAttribute(can, { "width": w * ratio, "height": h * ratio });
+        this.addCSS(can, { "width": w + "pt", "height": h + "pt" });
+        can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+        return can;
+    };
+    /////////////////// HTML Elements ///////////////////
+    /////////////////// CSS Attributes ///////////////////
+    /*
+    *   @desc set the non-css attribute for the HTML element
+    *       e.g. - addAttribute(element, { "class": "classname", "atr1": "value1", "atr2": "value2" });
+    *   @param element - HTMLElement in which you have to apply attributes: HTMLElement
+    *   @param attributes - element attributes to set (Optional): Object{}
+    */
+    UxUtils.addAttribute = function (element, attributes) {
+        if (attributes === void 0) { attributes = null; }
+        for (var atr in attributes) {
+            element.setAttribute(atr, attributes[atr]);
+        }
+    };
+    UxUtils.getLoadingSpinnerAttributes = function () {
+        this.addLoadingSpinnerAnimation();
+    };
+    UxUtils.lineBreak = function () {
+        return document.createElement('br');
+    };
+    UxUtils.getContentEditableSpan = function (text, placeholder, attributes, onInputEvent) {
+        if (text === void 0) { text = ""; }
+        if (placeholder === void 0) { placeholder = ""; }
+        if (attributes === void 0) { attributes = null; }
+        var element = this.getElement("span");
+        this.addAttribute(element, { "placeholder": placeholder, 'contenteditable': true });
+        element.classList.add("getContentEditableSpanAttributes");
+        Object.assign(element, attributes);
+        UxUtils.setText(element, text);
+        var maxLength = attributes["max-length"];
+        if (maxLength) {
+            UxUtils.setText(element, text.length > maxLength ? text.substr(0, maxLength) : text);
+        }
+        var prevString = element.innerText;
+        element.addEventListener('input', function () {
+            if (this.innerText.trim() == "") {
+                // this.clearElement(this);
+            }
+            if (maxLength && this.innerText.length > maxLength) {
+                UxUtils.setText(this, prevString);
+            }
+            else if (maxLength) {
+                prevString = this.innerText;
+            }
+            if (onInputEvent) {
+                onInputEvent();
+            }
+        });
+        element.addEventListener('click', function () {
+            element.focus();
+        });
+        return element;
+    };
+    /*
+    *   @desc gets the localized string from string.json and replace the argumnent in string.json with the argumnets received in the function
+    *       e.g. - addAttribute("question", qno, qdata);
+    *       then it will be replace in string.json string with key=question and arg {0} with qno and arg {1} with qdata
+    *   @param key - key in string.json: string
+    *   @param args - values to replace the arguments: Object{}
+    *   @return formatted string
+    */
+    UxUtils.getString = function (key) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        if (strings_json_1.default.hasOwnProperty(key)) {
+            var formatted = strings_json_1.default[key];
+            for (var i = 0; i < args.length; i++) {
+                var regexp = new RegExp('\\{' + i + '\\}', 'gi');
+                formatted = formatted.replace(regexp, args[i]);
+            }
+            return formatted;
+        }
+        else {
+            return key;
+        }
+    };
+    /*
+    *   @desc Creates an input element with placeholder, id and value provided as paramter
+    *   @param ph - placeholder for the input tag: string
+    *   @param id - id of HTML element: string
+    *   @param type - type of input element, numeric/text etc: string
+    *   @return HTML input element
+    */
+    UxUtils.createInputElement = function (ph, id, type) {
+        var inputelement = document.createElement('input');
+        this.addAttribute(inputelement, { "type": type, "value": "", "id": id, placeholder: ph });
+        return inputelement;
+    };
+    UxUtils.addLoadingSpinnerAnimation = function () {
+        if (this.spinnerCSSAdded) {
+            return;
+        }
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = "@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }";
+        document.getElementsByTagName('head')[0].appendChild(style);
+        this.spinnerCSSAdded = true;
+    };
+    UxUtils.DEFAULT_SPACE_LENGTH = "10pt";
+    UxUtils.DEFAULT_IMAGE_DIMEN = "50pt";
+    UxUtils.spinnerCSSAdded = false;
+    return UxUtils;
+}());
+exports.UxUtils = UxUtils;
+
+
+/***/ }),
+
 /***/ "./src/creationView/EnumContainer.ts":
 /*!*******************************************!*\
   !*** ./src/creationView/EnumContainer.ts ***!
@@ -936,9 +1523,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var actionSDK = __importStar(__webpack_require__(/*! action-sdk-sunny */ "./node_modules/action-sdk-sunny/dist/ActionSDK.min.js"));
 var EnumContainer_1 = __webpack_require__(/*! ./EnumContainer */ "./src/creationView/EnumContainer.ts");
 var Utils_1 = __webpack_require__(/*! ../common/Utils */ "./src/common/Utils.ts");
+var UxUtils_1 = __webpack_require__(/*! ../common/UxUtils */ "./src/common/UxUtils.ts");
 var root = document.getElementById("root");
-var bodyDiv = document.createElement("div");
-var footerDiv = document.createElement("div");
+var bodyDiv = UxUtils_1.UxUtils.getElement("div");
+var itemsDiv = UxUtils_1.UxUtils.getElement("div");
+var footerDiv = UxUtils_1.UxUtils.getElement("div");
+UxUtils_1.UxUtils.setClass(footerDiv, "footer");
 var itemsCount = 0;
 var actionId = "";
 var batchReq = [];
@@ -1066,42 +1656,35 @@ function submitFormNew() {
 }
 //HTML
 function OnPageLoad() {
-    root.appendChild(document.createElement("hr"));
-    root.appendChild(createInputElement("Name your checklist", "ChecklistName"));
-    root.appendChild(bodyDiv);
-    root.appendChild(footerDiv);
-    var linebreak = document.createElement("br");
-    var submit = document.createElement("BUTTON"); // Create a <button> element
-    submit.innerHTML = "Next";
+    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.getElement("hr"), root);
+    var title = UxUtils_1.UxUtils.createInputElement("Name your checklist", "ChecklistName", "title");
+    UxUtils_1.UxUtils.addElement(title, root);
+    UxUtils_1.UxUtils.addElement(bodyDiv, root);
+    UxUtils_1.UxUtils.addElement(itemsDiv, root);
+    UxUtils_1.UxUtils.addElement(footerDiv, root);
+    var submit = UxUtils_1.UxUtils.getElement("BUTTON"); // Create a <button> element
+    UxUtils_1.UxUtils.setText(submit, "Next");
     submit.style.float = "right";
-    submit.className = "button";
-    bodyDiv.appendChild(linebreak);
-    footerDiv.appendChild(linebreak);
-    footerDiv.appendChild(createAddItemDiv());
-    footerDiv.appendChild(submit);
+    UxUtils_1.UxUtils.setClass(submit, "button");
+    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.lineBreak(), bodyDiv);
+    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.lineBreak(), itemsDiv);
+    UxUtils_1.UxUtils.addElement(createAddItemDiv(), itemsDiv);
+    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.getElement("hr"), footerDiv);
+    UxUtils_1.UxUtils.addElement(submit, footerDiv);
     submit.addEventListener("click", function () {
         submitFormNew();
     });
 }
-function createInputElement(ph, id) {
-    var inputelement = document.createElement("input"); // Create Input Field for Name
-    inputelement.setAttribute("type", "title");
-    inputelement.setAttribute("id", id);
-    inputelement.placeholder = ph;
-    return inputelement;
-}
 function addItem() {
-    var itemDiv = document.createElement("div");
-    var linebreak = document.createElement("br");
-    var item = document.createElement("input");
-    item.type = "item";
-    item.setAttribute("id", itemsCount.toString());
-    item.setAttribute("value", "");
+    var itemDiv = UxUtils_1.UxUtils.getElement("div");
+    var item = UxUtils_1.UxUtils.getElement("input");
+    UxUtils_1.UxUtils.addAttribute(item, { "type": "item", "value": "" });
+    UxUtils_1.UxUtils.setId(item, itemsCount.toString());
     var itemId = item.id;
     isDeleted[itemId] = false;
     isCompleted[itemId] = false;
     var checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
+    UxUtils_1.UxUtils.addAttribute(checkbox, { "type": "checkbox" });
     checkbox.addEventListener("click", function () {
         if (checkbox.checked == true) {
             isCompleted[itemId] = true;
@@ -1110,36 +1693,36 @@ function addItem() {
             isCompleted[itemId] = false;
         }
     });
-    var del = document.createElement("BUTTON");
+    var del = UxUtils_1.UxUtils.getElement("BUTTON");
     del.style.border = "none";
     del.style.background = "none";
-    del.innerHTML = '<i class="fa fa-trash-o" style="font-size:15px"></i>';
+    UxUtils_1.UxUtils.setText(del, '<i class="fa fa-trash-o" style="font-size:15px"></i>');
+    // del.innerHTML = '<i class="fa fa-trash-o" style="font-size:15px"></i>';
     del.addEventListener("click", function () {
         isDeleted[itemId] = true;
         itemDiv.style.display = "none";
     });
-    itemDiv.appendChild(checkbox);
-    itemDiv.appendChild(item);
-    itemDiv.appendChild(del);
+    UxUtils_1.UxUtils.addElement(checkbox, itemDiv);
+    UxUtils_1.UxUtils.addElement(item, itemDiv);
+    UxUtils_1.UxUtils.addElement(del, itemDiv);
     itemsCount++;
     return itemDiv;
 }
 function createAddItemDiv() {
-    var addItemDiv = document.createElement("div");
-    var plus = document.createElement("BUTTON");
+    var addItemDiv = UxUtils_1.UxUtils.getElement("div");
+    var plus = UxUtils_1.UxUtils.getElement("BUTTON");
     plus.style.border = "none";
     plus.style.background = "none";
-    plus.innerHTML = '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>';
-    var add = document.createElement("input");
-    //add.type = "addItem";
+    UxUtils_1.UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
+    //plus.innerHTML = '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>';
+    var add = UxUtils_1.UxUtils.getElement("input");
     add.style.border = "none";
     add.style.color = "#6264a7";
-    add.setAttribute("value", "Add Item");
-    add.setAttribute("readonly", "true");
-    addItemDiv.appendChild(plus);
-    addItemDiv.appendChild(add);
+    UxUtils_1.UxUtils.addAttribute(add, { "value": "Add Item", "readonly": "true" });
+    UxUtils_1.UxUtils.addElement(plus, addItemDiv);
+    UxUtils_1.UxUtils.addElement(add, addItemDiv);
     addItemDiv.addEventListener("click", function () {
-        bodyDiv.appendChild(addItem());
+        UxUtils_1.UxUtils.addElement(addItem(), bodyDiv);
     });
     return addItemDiv;
 }

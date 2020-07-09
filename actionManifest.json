@@ -1,6 +1,6 @@
 {
-    "id": "com.microsoft.test.shail12",
-    "name": "Checklist(shail)12",
+    "id": "com.microsoft.test.shail20",
+    "name": "Checklist(shail)20",
     "description": "sample app",
     "provider": {
         "name": "Microsoft",
@@ -9,30 +9,30 @@
         "termsOfUseUrl": "https://www.microsoft.com/app-tos"
     },
     "icon": "images/appIcon.png",
-    "version": "1.0.74",
+    "version": "1.0.11",
     "actionModel": "actionModel.json",
     "views": {
         "CardView": {
-            "sourceLocation": "json/cardView.json"
+            "sourceLocation": "cardView.json"
         },
         "LaunchView": {
-            "sourceLocation": "html/createView.html",
+            "sourceLocation": "createView.html",
             "header": "Create a new checklist"
         },
         "ResponseView": {
-            "sourceLocation": "html/responseView.html",
+            "sourceLocation": "responseView.html",
             "header": " Checklist Response View"
         },
         "UpdateView": {
-            "sourceLocation": "html/updateView.html",
-            "header": " Checklist Update View"
+            "sourceLocation": "updateView.html",
+            "header": " Edit the checklist"
         }
 
     },
     "localizationInfo": {
         "defaultLocale": "en-us",
         "localeFiles": {
-            "en-us": "strings/strings.json"
+            "en-us": "strings/en-us/strings.json"
         }
     }
 }
