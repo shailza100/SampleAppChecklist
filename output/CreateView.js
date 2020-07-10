@@ -1662,14 +1662,15 @@ function OnPageLoad() {
     UxUtils_1.UxUtils.addElement(bodyDiv, root);
     UxUtils_1.UxUtils.addElement(itemsDiv, root);
     UxUtils_1.UxUtils.addElement(footerDiv, root);
-    var submit = UxUtils_1.UxUtils.getElement("BUTTON"); // Create a <button> element
+    var submit = UxUtils_1.UxUtils.getElement("BUTTON");
+    UxUtils_1.UxUtils.setClass(submit, "button2");
     UxUtils_1.UxUtils.setText(submit, "Next");
     submit.style.float = "right";
-    UxUtils_1.UxUtils.setClass(submit, "button");
+    UxUtils_1.UxUtils.setClass(submit, "button2");
     UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.lineBreak(), bodyDiv);
     UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.lineBreak(), itemsDiv);
+    UxUtils_1.UxUtils.addElement(addItem(), bodyDiv); //To add first item onPageLoad 
     UxUtils_1.UxUtils.addElement(createAddItemDiv(), itemsDiv);
-    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.getElement("hr"), footerDiv);
     UxUtils_1.UxUtils.addElement(submit, footerDiv);
     submit.addEventListener("click", function () {
         submitFormNew();
@@ -1694,10 +1695,8 @@ function addItem() {
         }
     });
     var del = UxUtils_1.UxUtils.getElement("BUTTON");
-    del.style.border = "none";
-    del.style.background = "none";
+    UxUtils_1.UxUtils.setClass(del, "button1");
     UxUtils_1.UxUtils.setText(del, '<i class="fa fa-trash-o" style="font-size:15px"></i>');
-    // del.innerHTML = '<i class="fa fa-trash-o" style="font-size:15px"></i>';
     del.addEventListener("click", function () {
         isDeleted[itemId] = true;
         itemDiv.style.display = "none";
@@ -1711,14 +1710,11 @@ function addItem() {
 function createAddItemDiv() {
     var addItemDiv = UxUtils_1.UxUtils.getElement("div");
     var plus = UxUtils_1.UxUtils.getElement("BUTTON");
-    plus.style.border = "none";
-    plus.style.background = "none";
+    UxUtils_1.UxUtils.setClass(plus, "button1");
     UxUtils_1.UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
-    //plus.innerHTML = '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>';
     var add = UxUtils_1.UxUtils.getElement("input");
-    add.style.border = "none";
-    add.style.color = "#6264a7";
-    UxUtils_1.UxUtils.addAttribute(add, { "value": "Add Item", "readonly": "true" });
+    //add.style.color = "#6264a7";
+    UxUtils_1.UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });
     UxUtils_1.UxUtils.addElement(plus, addItemDiv);
     UxUtils_1.UxUtils.addElement(add, addItemDiv);
     addItemDiv.addEventListener("click", function () {

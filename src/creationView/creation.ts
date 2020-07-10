@@ -156,15 +156,17 @@ function OnPageLoad() {
   UxUtils.addElement(itemsDiv, root);
   UxUtils.addElement(footerDiv, root);
 
-  var submit = UxUtils.getElement("BUTTON"); // Create a <button> element
+  var submit = UxUtils.getElement("BUTTON");
+  UxUtils.setClass(submit, "button2");
   UxUtils.setText(submit, "Next");
   submit.style.float = "right";
-  UxUtils.setClass(submit, "button");
+  UxUtils.setClass(submit, "button2");
 
   UxUtils.addElement(UxUtils.lineBreak(), bodyDiv);
   UxUtils.addElement(UxUtils.lineBreak(), itemsDiv);
+  UxUtils.addElement(addItem(), bodyDiv);//To add first item onPageLoad 
   UxUtils.addElement(createAddItemDiv(), itemsDiv);
-  UxUtils.addElement(UxUtils.getElement("hr"), footerDiv);
+
   UxUtils.addElement(submit, footerDiv);
 
   submit.addEventListener("click", function () {
@@ -195,10 +197,8 @@ function addItem() {
   });
 
   var del = UxUtils.getElement("BUTTON");
-  del.style.border = "none";
-  del.style.background = "none";
+  UxUtils.setClass(del, "button1");
   UxUtils.setText(del, '<i class="fa fa-trash-o" style="font-size:15px"></i>');
-  // del.innerHTML = '<i class="fa fa-trash-o" style="font-size:15px"></i>';
 
   del.addEventListener("click", function () {
     isDeleted[itemId] = true;
@@ -217,15 +217,11 @@ function addItem() {
 function createAddItemDiv() {
   var addItemDiv = UxUtils.getElement("div");
   var plus = UxUtils.getElement("BUTTON");
-  plus.style.border = "none";
-  plus.style.background = "none";
+  UxUtils.setClass(plus, "button1");
   UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
-  //plus.innerHTML = '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>';
 
   var add = UxUtils.getElement("input");
-  add.style.border = "none";
-  add.style.color = "#6264a7";
-  UxUtils.addAttribute(add, { "value": "Add Item", "readonly": "true" });
+  UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });
 
   UxUtils.addElement(plus, addItemDiv);
   UxUtils.addElement(add, addItemDiv);
