@@ -162,8 +162,6 @@ function OnPageLoad() {
   submit.style.float = "right";
   UxUtils.setClass(submit, "button2");
 
-  UxUtils.addElement(UxUtils.lineBreak(), bodyDiv);
-  UxUtils.addElement(UxUtils.lineBreak(), itemsDiv);
   UxUtils.addElement(addItem(), bodyDiv);//To add first item onPageLoad 
   UxUtils.addElement(createAddItemDiv(), itemsDiv);
 
@@ -216,9 +214,9 @@ function addItem() {
 
 function createAddItemDiv() {
   var addItemDiv = UxUtils.getElement("div");
-  var plus = UxUtils.getElement("BUTTON");
-  UxUtils.setClass(plus, "button1");
-  UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
+  var plus = UxUtils.getElement("i");
+  UxUtils.setClass(plus, "fa fa-plus");
+  //UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
 
   var add = UxUtils.getElement("input");
   UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });

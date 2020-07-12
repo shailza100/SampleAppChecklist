@@ -16,8 +16,29 @@ div#root {
     float: left;
 }
 
+body {
+    font-family: "Segoe UI";
+}
+
 #main h1 {
     margin-top: 40px;
+}
+
+h4 {
+    margin-top: -2px;
+    margin-bottom: -2px;
+}
+
+h6 {
+    margin-top: -2px;
+    margin-left: 10px;
+    font-family: "Segoe UI";
+    font-weight: normal;
+    margin-bottom: auto;
+}
+
+h5 {
+    margin-bottom: 2px;
 }
 
 hr {
@@ -41,22 +62,22 @@ input[type="title"] {
     background-color: #F3F2F1;
     border: none;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 15px;
     font-family: "Segoe UI";
     outline: none;
 }
 
 input[type="item"] {
     border-radius: 2px;
-    width: 80%;
+    width: 83%;
     margin-top: 5px;
     height: 15px;
     margin-bottom: 5px;
-    margin-right: 10px;
+    margin-right: 2px;
     padding: 10px;
     background-color: #F3F2F1;
     border: none;
-    font-size: 15px;
+    font-size: 12px;
     font-family: "Segoe UI";
     outline: none;
 }
@@ -71,6 +92,7 @@ input[type="additem"] {
     height: 10px;
     margin-bottom: 5px;
     margin-right: 10px;
+    margin-left: 10px;
     padding: 10px;
     cursor: pointer;
     border: none;
@@ -97,6 +119,16 @@ input[type="checkbox"] {
     outline: none;
 }
 
+.fa-plus {
+    color: #6264a7;
+    margin-left: 5px;
+    font-size: 20px;
+    font-weight: lighter;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: "Segoe UI"
+}
+
 input[type="additem"],
 select {
     outline: none;
@@ -107,14 +139,15 @@ select {
     border: none;
     border-radius: 2px;
     color: white;
-    padding: 5px 15px;
+    padding: 5px 35px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 13px;
+    font-size: 15px;
     margin: 4px 2px;
     cursor: pointer;
     font-family: "Segoe UI";
+    outline: none;
 }
 
 .button2:hover {
@@ -124,12 +157,12 @@ select {
 .footer {
     position: fixed;
     left: 0px;
-    bottom: 20px;
+    bottom: 10px;
     width: 95%;
     background-color: white;
     color: white;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 

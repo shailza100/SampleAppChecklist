@@ -1667,8 +1667,6 @@ function OnPageLoad() {
     UxUtils_1.UxUtils.setText(submit, "Next");
     submit.style.float = "right";
     UxUtils_1.UxUtils.setClass(submit, "button2");
-    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.lineBreak(), bodyDiv);
-    UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.lineBreak(), itemsDiv);
     UxUtils_1.UxUtils.addElement(addItem(), bodyDiv); //To add first item onPageLoad 
     UxUtils_1.UxUtils.addElement(createAddItemDiv(), itemsDiv);
     UxUtils_1.UxUtils.addElement(submit, footerDiv);
@@ -1709,11 +1707,10 @@ function addItem() {
 }
 function createAddItemDiv() {
     var addItemDiv = UxUtils_1.UxUtils.getElement("div");
-    var plus = UxUtils_1.UxUtils.getElement("BUTTON");
-    UxUtils_1.UxUtils.setClass(plus, "button1");
-    UxUtils_1.UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
+    var plus = UxUtils_1.UxUtils.getElement("i");
+    UxUtils_1.UxUtils.setClass(plus, "fa fa-plus");
+    //UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
     var add = UxUtils_1.UxUtils.getElement("input");
-    //add.style.color = "#6264a7";
     UxUtils_1.UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });
     UxUtils_1.UxUtils.addElement(plus, addItemDiv);
     UxUtils_1.UxUtils.addElement(add, addItemDiv);

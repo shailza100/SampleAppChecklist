@@ -7,10 +7,14 @@ var root = document.getElementById("root");
 var openItemDiv = document.createElement("div");
 var addItemDiv = document.createElement("div");
 var completeItemDiv = document.createElement("div");
+var footerDiv = UxUtils.getElement("div");
+UxUtils.setClass(footerDiv, "footer");
 
 
 let actionInstance = null;
 let actionDataRows = null;
+let actionContext = null;
+let subscriptionMembers = [];
 let openItems = 0;
 let completedItems = 0;
 let batchUpdateReq = [];
@@ -19,13 +23,16 @@ let isDeleted = {};
 let isCompleted = {};
 let userId = "";
 
+
 OnPageLoad();
 
 function createBody() {
-    var title = document.createElement('h3');
+    UxUtils.addElement(UxUtils.getElement("hr"), root);
+    var title = document.createElement('h4');
     var save = document.createElement("BUTTON");
+    save.className = "button2"
     title.innerHTML = actionInstance.displayName;
-    save.innerHTML = "Save";
+    save.innerHTML = "Save Changes";
     save.style.float = "right";
     //Call update row API on Save button
     save.addEventListener("click", function () {
@@ -35,29 +42,25 @@ function createBody() {
     UxUtils.addElement(openItemDiv, root);
     UxUtils.addElement(addItemDiv, root);
     UxUtils.addElement(completeItemDiv, root);
+    UxUtils.addElement(footerDiv, root);
+    UxUtils.addElement(save, footerDiv);
 
     createAddItemView();
     getCountOfItems();
     var heading1 = document.createElement('h5');
-    heading1.innerHTML = "Open items(" + openItems + ")";
+    heading1.innerHTML = "Open items (" + openItems + ")";
     openItemDiv.appendChild(heading1);
 
     var heading2 = document.createElement('h5');
-    heading2.innerHTML = "Completed items(" + completedItems + ")";
+    heading2.innerHTML = "Completed items (" + completedItems + ")";
     completeItemDiv.appendChild(heading2);
 
     //Add open items
     createOpenItemsView();
-
-    UxUtils.addElement(UxUtils.lineBreak(), root);
-    UxUtils.addElement(UxUtils.lineBreak(), root);
-
     //Add completed items
     createCompleteItemsView();
 
-    UxUtils.addElement(UxUtils.lineBreak(), root);
-    UxUtils.addElement(save, root);
-    UxUtils.addElement(UxUtils.lineBreak(), root);
+
 }
 
 //GetContext
@@ -65,6 +68,7 @@ function OnPageLoad() {
     actionSDK.executeApi(new actionSDK.GetContext.Request())
         .then(function (response: actionSDK.GetContext.Response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
+            actionContext = response.context;
             userId = response.context.userId;
             getActionInstance(response.context.actionId);
         })
@@ -109,25 +113,7 @@ function updateDataRow() {
         });
 }
 
-//Get user details who completed the item
 
-function getUserDetails(userId) {
-    var request = new actionSDK.GetSubscriptionMembers.Request(actionInstance.subscription, userId);
-    batchUpdateReq.push(request);
-}
-
-
-//Close Update view
-function closeResponseView() {
-    actionSDK.executeApi(new actionSDK.CloseView.Request)
-        .then(function (response: actionSDK.CloseView.Response) {
-            console.info("CloseView - Response: " + JSON.stringify(response));
-        })
-        .catch(function (error) {
-            console.error("CloseView - Error: " + error.message);
-        });
-
-}
 //CreateRequest to Add New Item
 function createAddRowsRequests(actionId) {
     let row = {};
@@ -169,33 +155,65 @@ function updateStatusOfChecklistItem(row: actionSDK.ActionDataRow, isDeleted = f
     let currentStatus = row.columnValues[statusCol];
     if (currentStatus == Status.ACTIVE && isDeleted == false) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.COMPLETED;
-        row[ChecklistColumnType.completionUser.toString()] = userId;
-        row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
+        row.columnValues[ChecklistColumnType.completionUser.toString()] = userId;
+        row.columnValues[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
     }
     else if (currentStatus == Status.COMPLETED && isDeleted == false) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.ACTIVE;
     }
     else if (isDeleted == true) {
         row.columnValues[ChecklistColumnType.status.toString()] = Status.DELETED;
-        row[ChecklistColumnType.deletionUser.toString()] = userId;
-        row[ChecklistColumnType.deletionTime.toString()] = new Date().getTime().toString();
+        row.columnValues[ChecklistColumnType.deletionUser.toString()] = userId;
+        row.columnValues[ChecklistColumnType.deletionTime.toString()] = new Date().getTime().toString();
     }
-    row[ChecklistColumnType.latestEditUser.toString()] = userId;
-    row[ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
+    row.columnValues[ChecklistColumnType.latestEditUser.toString()] = userId;
+    row.columnValues[ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
 }
 
 //Update value for a row
 function updateValueOfChecklistItem(row: actionSDK.ActionDataRow, newVal) {
     let itemCol = ChecklistColumnType.checklistItem.toString();
     row.columnValues[itemCol] = newVal;
-    row[ChecklistColumnType.latestEditUser.toString()] = userId;
-    row[ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
+    row.columnValues[ChecklistColumnType.latestEditUser.toString()] = userId;
+    row.columnValues[ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
 }
 
 //create a new upadte req
 function createUpdateRequest(row: actionSDK.ActionDataRow) {
     let updateReq = new actionSDK.UpdateActionDataRow.Request(row);
     batchUpdateReq.push(updateReq);
+}
+
+//Get user details who completed the item
+
+async function getCompletionUserDetails() {
+    try {
+        let memberIds = [];
+        actionDataRows.forEach((row) => {
+            if (row.columnValues[ChecklistColumnType.status] == Status.COMPLETED) {
+                memberIds.push(row.columnValues[ChecklistColumnType.completionUser]);
+            }
+        });
+        var request = new actionSDK.GetSubscriptionMembers.Request(actionContext.subscription, memberIds);
+        console.info("GetSubscriptionMembers Request " + JSON.stringify(request));
+        let response = await actionSDK.executeApi(request) as actionSDK.GetSubscriptionMembers.Response;
+        subscriptionMembers = response.members;
+        console.info("GetSubscriptionMembers - Response" + JSON.stringify(response));
+    }
+    catch (error) {
+        console.error("GetSubscriptionMembers - Error" + error.message);
+    }
+}
+
+//Get completion User displayName
+function getUserDisplayName(memberId) {
+    let displayName = "";
+    subscriptionMembers.forEach((member) => {
+        if (member.id == memberId) {
+            displayName = member.displayName;
+        }
+    });
+    return displayName;
 }
 
 
@@ -221,6 +239,15 @@ function isValueUpdated(oldval, newval) {
     else return false;
 }
 
+
+function dateConverter(timeStamp) {
+    var date = new Date(parseInt(timeStamp));
+    let hour = date.getHours();
+    let min = date.getMinutes();
+    return (date.toDateString() + ", " + hour + ":" + min);
+}
+
+
 //---HTML----
 
 //View for open items
@@ -229,7 +256,6 @@ function createOpenItemsView() {
     actionDataRows.forEach((row) => {
         if (row.columnValues[ChecklistColumnType.status] == Status.ACTIVE) {
             var itemDiv = document.createElement("div");
-            var linebreak = document.createElement("br");
 
             var checkbox = document.createElement("input");
             checkbox.setAttribute("type", "checkbox");
@@ -256,6 +282,7 @@ function createOpenItemsView() {
 
 
             var del = document.createElement("BUTTON");
+            del.className = "button1";
             del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
             del.addEventListener("click", function () {
                 updateStatusOfChecklistItem(row, true);
@@ -275,18 +302,22 @@ function createOpenItemsView() {
 //Add Item View
 function createAddItemView() {
 
-    var addItem = document.createElement("BUTTON");
-    addItem.innerHTML = "Add Item";
-    addItem.addEventListener("click", function () {
+    var plus = UxUtils.getElement("i");
+    UxUtils.setClass(plus, "fa fa-plus");
+
+    var add = UxUtils.getElement("input");
+    UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });
+
+    UxUtils.addElement(plus, addItemDiv);
+    UxUtils.addElement(add, addItemDiv);
+
+    addItemDiv.addEventListener("click", function () {
         createNewItemDiv();
     });
-    addItemDiv.appendChild(addItem);
 }
 
 function createNewItemDiv() {
     var itemDiv = document.createElement("div");
-    var linebreak = document.createElement("br");
-
     var item = document.createElement("input");
     item.setAttribute("type", "item");
     item.setAttribute("value", "");
@@ -307,6 +338,7 @@ function createNewItemDiv() {
     });
 
     var del = document.createElement("BUTTON");
+    del.className = "button1";
     del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
     del.addEventListener("click", function () {
         isDeleted[itemId] = true;
@@ -321,12 +353,13 @@ function createNewItemDiv() {
 }
 
 //View for completed items
-function createCompleteItemsView() {
+async function createCompleteItemsView() {
+    //First fetch user details
+    await getCompletionUserDetails();
     var column = ChecklistColumnType.checklistItem;
     actionDataRows.forEach((row) => {
         if (row.columnValues[ChecklistColumnType.status] == Status.COMPLETED) {
             var itemDiv = document.createElement("div");
-            var linebreak = document.createElement("br");
             var checkbox = document.createElement("input");
             checkbox.setAttribute("type", "checkbox");
             checkbox.setAttribute("id", row.id);
@@ -344,11 +377,19 @@ function createCompleteItemsView() {
             item.setAttribute("value", row.columnValues[column]);
             item.setAttribute("readOnly", "true");
 
+            var completedBy = document.createElement("h6");
+            var time = dateConverter(row.columnValues[ChecklistColumnType.completionTime]);
+            var completionUser = getUserDisplayName(row.columnValues[ChecklistColumnType.completionUser]);
+            completedBy.innerHTML = "Completed by " + completionUser + " on " + time.toString();
+
             itemDiv.appendChild(checkbox);
             itemDiv.appendChild(item);
+            itemDiv.appendChild(completedBy);
+
             completeItemDiv.appendChild(itemDiv);
         }
     });
 }
+
 
 
