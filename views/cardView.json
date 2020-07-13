@@ -20,6 +20,16 @@
                 "spacing": "small"
             },
             {
+                "id": "Count",
+                "type": "TextBlock",
+                "text": "Number of items in checklist : ${count(dataRows)}",
+                "size": "small",
+                "maxLines": 3,
+                "wrap": true,
+                "weight": "bolder",
+                "spacing": "small"
+            },
+            {
                 "id": "Title2",
                 "type": "TextBlock",
                 "text": "Open items",
@@ -35,11 +45,13 @@
                 "style": "emphasis",
                 "items": [{
                     "type": "TextBlock",
-                    "id": "Item1",
-                    "text": "Number of checklist items : ${count(dataRow)}",
+                    "$data": "${dataRows}",
+                    "$when": "${equals(columnValues['status'],'ACTIVE')}",
+                    "text": "${columnValues['checklistItem']}",
                     "wrap": true,
                     "size": "medium",
                     "spacing": "medium"
+
                 }]
             },
             {
@@ -66,7 +78,7 @@
         "action": {
             "command": "GetAction"
         },
-        "dataRow": {
+        "dataRows": {
             "command": "GetActionDataRows",
             "parameters": {
                 "pageSize": 10
