@@ -1561,9 +1561,9 @@ var UxUtils_1 = __webpack_require__(/*! ../common/UxUtils */ "./src/common/UxUti
 var Utils_1 = __webpack_require__(/*! ../common/Utils */ "./src/common/Utils.ts");
 var EnumContainer_1 = __webpack_require__(/*! ../creationView/EnumContainer */ "./src/creationView/EnumContainer.ts");
 var root = document.getElementById("root");
-var openItemDiv = document.createElement("div");
-var addItemDiv = document.createElement("div");
-var completeItemDiv = document.createElement("div");
+var openItemDiv = UxUtils_1.UxUtils.getElement("div");
+var addItemDiv = UxUtils_1.UxUtils.getElement("div");
+var completeItemDiv = UxUtils_1.UxUtils.getElement("div");
 var footerDiv = UxUtils_1.UxUtils.getElement("div");
 UxUtils_1.UxUtils.setClass(footerDiv, "footer");
 var actionInstance = null;
@@ -1580,17 +1580,17 @@ var userId = "";
 OnPageLoad();
 function createBody() {
     UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.getElement("hr"), root);
-    var title = document.createElement('h4');
-    var save = document.createElement("BUTTON");
-    save.className = "button2";
+    var title = UxUtils_1.UxUtils.getElement("h4");
+    var save = UxUtils_1.UxUtils.getElement("button");
+    UxUtils_1.UxUtils.setClass(save, "button2");
     UxUtils_1.UxUtils.addAttribute(save, { "id": "save" });
-    title.innerHTML = actionInstance.displayName;
-    save.innerHTML = "Save Changes";
+    UxUtils_1.UxUtils.setText(save, "Save Changes");
     save.style.float = "right";
     //Call update row API on Save button
     save.addEventListener("click", function () {
         updateDataRow();
     });
+    UxUtils_1.UxUtils.setText(title, actionInstance.displayName.toString());
     UxUtils_1.UxUtils.addElement(title, root);
     UxUtils_1.UxUtils.addElement(openItemDiv, root);
     UxUtils_1.UxUtils.addElement(addItemDiv, root);
@@ -1599,12 +1599,12 @@ function createBody() {
     UxUtils_1.UxUtils.addElement(save, footerDiv);
     createAddItemView();
     getCountOfItems();
-    var heading1 = document.createElement('h5');
-    heading1.innerHTML = "Open items (" + openItems + ")";
-    openItemDiv.appendChild(heading1);
-    var heading2 = document.createElement('h5');
-    heading2.innerHTML = "Completed items (" + completedItems + ")";
-    completeItemDiv.appendChild(heading2);
+    var heading1 = UxUtils_1.UxUtils.getElement("h5");
+    UxUtils_1.UxUtils.setText(heading1, "Open items (" + openItems + ")");
+    UxUtils_1.UxUtils.addElement(heading1, openItemDiv);
+    var heading2 = UxUtils_1.UxUtils.getElement("h5");
+    UxUtils_1.UxUtils.setText(heading2, "Completed items (" + completedItems + ")");
+    UxUtils_1.UxUtils.addElement(heading2, completeItemDiv);
     //Add open items
     createOpenItemsView();
     //Add completed items
@@ -1612,15 +1612,15 @@ function createBody() {
 }
 //GetContext
 function OnPageLoad() {
-    /*let loader = loaderforPage();
-    UxUtils.addElement(loader, root);*/
+    var loader = loaderforPage();
+    UxUtils_1.UxUtils.addElement(loader, root);
     actionSDK.executeApi(new actionSDK.GetContext.Request())
         .then(function (response) {
         console.info("GetContext - Response: " + JSON.stringify(response));
         actionContext = response.context;
         userId = response.context.userId;
         getActionInstance(response.context.actionId);
-        //UxUtils.addCSS(loader, { "display": "none" });
+        UxUtils_1.UxUtils.addCSS(loader, { "display": "none" });
     })
         .catch(function (error) {
         console.error("GetContext - Error: " + JSON.stringify(error));
@@ -1628,8 +1628,8 @@ function OnPageLoad() {
 }
 //GetAction and GetActionDataRows
 function getActionInstance(actionId) {
-    /*let loader = loaderforPage();
-    UxUtils.addElement(loader, root);*/
+    var loader = loaderforPage();
+    UxUtils_1.UxUtils.addElement(loader, root);
     var getActionRequest = new actionSDK.GetAction.Request(actionId);
     var getDataRowsRequest = new actionSDK.GetActionDataRows.Request(actionId);
     var batchRequest = new actionSDK.BaseApi.BatchRequest([getActionRequest, getDataRowsRequest]);
@@ -1638,7 +1638,7 @@ function getActionInstance(actionId) {
         console.info("BatchResponse: " + JSON.stringify(batchResponse));
         actionInstance = batchResponse.responses[0].action;
         actionDataRows = batchResponse.responses[1].dataRows;
-        // UxUtils.addCSS(loader, { "display": "none" });
+        UxUtils_1.UxUtils.addCSS(loader, { "display": "none" });
         createBody();
     })
         .catch(function (error) {
@@ -1803,41 +1803,39 @@ function createOpenItemsView() {
     var column = EnumContainer_1.ChecklistColumnType.checklistItem;
     actionDataRows.forEach(function (row) {
         if (row.columnValues[EnumContainer_1.ChecklistColumnType.status] == EnumContainer_1.Status.ACTIVE) {
-            var itemDiv = document.createElement("div");
-            var checkbox = document.createElement("input");
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.setAttribute("id", row.id);
-            checkbox.addEventListener("click", function () {
+            var itemDiv = UxUtils_1.UxUtils.getElement("div");
+            var checkbox_1 = document.createElement("input");
+            UxUtils_1.UxUtils.addAttribute(checkbox_1, { "type": "checkbox", "id": row.id });
+            checkbox_1.addEventListener("click", function () {
                 //Update the row
                 console.info("value of data status BEFORE" + JSON.stringify(row));
                 updateStatusOfChecklistItem(row);
                 createUpdateRequest(row);
                 console.info("value of data status AFTER" + JSON.stringify(row));
             });
-            var item = document.createElement("input");
-            item.setAttribute("type", "item");
-            item.setAttribute("value", row.columnValues[column]);
-            item.addEventListener("change", function () {
+            var item_1 = document.createElement("input");
+            UxUtils_1.UxUtils.addAttribute(item_1, { "type": "item", "value": row.columnValues[column] });
+            item_1.addEventListener("change", function () {
                 console.info("value of data value BEFORE" + JSON.stringify(row));
-                if (isValueUpdated(row.columnValues[column], item.value)) {
-                    updateValueOfChecklistItem(row, item.value);
+                if (isValueUpdated(row.columnValues[column], item_1.value)) {
+                    updateValueOfChecklistItem(row, item_1.value);
                     createUpdateRequest(row);
                     console.info("value of data value AFTER" + JSON.stringify(row));
                 }
             });
-            var del = document.createElement("BUTTON");
-            del.className = "button1";
-            del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+            var del = UxUtils_1.UxUtils.getElement("button");
+            UxUtils_1.UxUtils.setClass(del, "button1");
+            UxUtils_1.UxUtils.setText(del, '<i class="fa fa-trash-o" aria-hidden="true"></i>');
             del.addEventListener("click", function () {
                 updateStatusOfChecklistItem(row, true);
-                item.disabled = true;
-                checkbox.disabled = true;
+                item_1.disabled = true;
+                checkbox_1.disabled = true;
                 createUpdateRequest(row);
             });
-            itemDiv.appendChild(checkbox);
-            itemDiv.appendChild(item);
-            itemDiv.appendChild(del);
-            openItemDiv.appendChild(itemDiv);
+            UxUtils_1.UxUtils.addElement(checkbox_1, itemDiv);
+            UxUtils_1.UxUtils.addElement(item_1, itemDiv);
+            UxUtils_1.UxUtils.addElement(del, itemDiv);
+            UxUtils_1.UxUtils.addElement(itemDiv, openItemDiv);
         }
     });
 }
@@ -1854,16 +1852,14 @@ function createAddItemView() {
     });
 }
 function createNewItemDiv() {
-    var itemDiv = document.createElement("div");
+    var itemDiv = UxUtils_1.UxUtils.getElement("div");
     var item = document.createElement("input");
-    item.setAttribute("type", "item");
-    item.setAttribute("value", "");
-    item.setAttribute("id", countNewItems.toString());
+    UxUtils_1.UxUtils.addAttribute(item, { "type": "item", "value": "", "id": countNewItems.toString() });
     var itemId = item.id;
     isDeleted[itemId] = false;
     isCompleted[itemId] = false;
     var checkbox = document.createElement("input");
-    checkbox.setAttribute("type", "checkbox");
+    UxUtils_1.UxUtils.addAttribute(checkbox, { "type": "checkbox" });
     checkbox.addEventListener("click", function () {
         if (checkbox.checked == true) {
             isCompleted[itemId] = true;
@@ -1872,18 +1868,18 @@ function createNewItemDiv() {
             isCompleted[itemId] = false;
         }
     });
-    var del = document.createElement("BUTTON");
-    del.className = "button1";
-    del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+    var del = UxUtils_1.UxUtils.getElement("button");
+    UxUtils_1.UxUtils.setClass(del, "button1");
+    UxUtils_1.UxUtils.setText(del, '<i class="fa fa-trash-o" aria-hidden="true"></i>');
     del.addEventListener("click", function () {
         isDeleted[itemId] = true;
         item.disabled = true;
         checkbox.disabled = true;
     });
-    itemDiv.appendChild(checkbox);
-    itemDiv.appendChild(item);
-    itemDiv.appendChild(del);
-    openItemDiv.appendChild(itemDiv);
+    UxUtils_1.UxUtils.addElement(checkbox, itemDiv);
+    UxUtils_1.UxUtils.addElement(item, itemDiv);
+    UxUtils_1.UxUtils.addElement(del, itemDiv);
+    UxUtils_1.UxUtils.addElement(itemDiv, openItemDiv);
     countNewItems++;
 }
 //View for completed items
@@ -1901,11 +1897,9 @@ function createCompleteItemsView() {
                     column = EnumContainer_1.ChecklistColumnType.checklistItem;
                     actionDataRows.forEach(function (row) {
                         if (row.columnValues[EnumContainer_1.ChecklistColumnType.status] == EnumContainer_1.Status.COMPLETED) {
-                            var itemDiv = document.createElement("div");
-                            var checkbox = document.createElement("input");
-                            checkbox.setAttribute("type", "checkbox");
-                            checkbox.setAttribute("id", row.id);
-                            checkbox.setAttribute("checked", "true");
+                            var itemDiv = UxUtils_1.UxUtils.getElement("div");
+                            var checkbox = UxUtils_1.UxUtils.getElement("input");
+                            UxUtils_1.UxUtils.addAttribute(checkbox, { "type": "checkbox", "id": row.id, "checked": "true" });
                             checkbox.addEventListener("click", function () {
                                 //Update the row
                                 console.info("value of data row BEFORE" + JSON.stringify(row));
@@ -1913,18 +1907,16 @@ function createCompleteItemsView() {
                                 createUpdateRequest(row);
                                 console.info("value of data row AFTER" + JSON.stringify(row));
                             });
-                            var item = document.createElement("input");
-                            item.setAttribute("type", "item");
-                            item.setAttribute("value", row.columnValues[column]);
-                            item.setAttribute("readOnly", "true");
-                            var completedBy = document.createElement("h6");
+                            var item = UxUtils_1.UxUtils.getElement("input");
+                            UxUtils_1.UxUtils.addAttribute(item, { "type": "item", "value": row.columnValues[column], "readOnly": "true" });
+                            var completedBy = UxUtils_1.UxUtils.getElement("h6");
                             var time = dateConverter(row.columnValues[EnumContainer_1.ChecklistColumnType.completionTime]);
                             var completionUser = getUserDisplayName(row.columnValues[EnumContainer_1.ChecklistColumnType.completionUser]);
-                            completedBy.innerHTML = "Completed by " + completionUser + " on " + time.toString();
-                            itemDiv.appendChild(checkbox);
-                            itemDiv.appendChild(item);
-                            itemDiv.appendChild(completedBy);
-                            completeItemDiv.appendChild(itemDiv);
+                            UxUtils_1.UxUtils.setText(completedBy, "Completed by " + completionUser + " on " + time.toString());
+                            UxUtils_1.UxUtils.addElement(checkbox, itemDiv);
+                            UxUtils_1.UxUtils.addElement(item, itemDiv);
+                            UxUtils_1.UxUtils.addElement(completedBy, itemDiv);
+                            UxUtils_1.UxUtils.addElement(itemDiv, completeItemDiv);
                         }
                     });
                     return [2 /*return*/];
@@ -1932,11 +1924,12 @@ function createCompleteItemsView() {
         });
     });
 }
-/*function loaderforPage() {
-    let loader = UxUtils.getLoadingSpinner();
-    UxUtils.addCSS(loader, { "position": "absolute", "left": "45%", "top": "45%", "width": "150pt", "height": "150pt", "margin": "-75px 0 0 -75px" });
+//Returns Loader for Page
+function loaderforPage() {
+    var loader = UxUtils_1.UxUtils.getLoadingSpinner();
+    UxUtils_1.UxUtils.addCSS(loader, { "position": "absolute", "left": "45%", "top": "45%", "width": "150pt", "height": "150pt", "margin": "-75px 0 0 -75px" });
     return loader;
-}*/ 
+}
 
 
 /***/ })

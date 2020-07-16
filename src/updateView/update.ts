@@ -3,11 +3,11 @@ import { UxUtils } from '../common/UxUtils'
 import { Utils } from '../common/Utils';
 import { ChecklistColumnType, Status } from "../creationView/EnumContainer";
 
-var root = document.getElementById("root");
-var openItemDiv = document.createElement("div");
-var addItemDiv = document.createElement("div");
-var completeItemDiv = document.createElement("div");
-var footerDiv = UxUtils.getElement("div");
+let root = document.getElementById("root");
+let openItemDiv = UxUtils.getElement("div");
+let addItemDiv = UxUtils.getElement("div");
+let completeItemDiv = UxUtils.getElement("div");
+let footerDiv = UxUtils.getElement("div");
 UxUtils.setClass(footerDiv, "footer");
 
 
@@ -28,17 +28,21 @@ OnPageLoad();
 
 function createBody() {
     UxUtils.addElement(UxUtils.getElement("hr"), root);
-    var title = document.createElement('h4');
-    var save = document.createElement("BUTTON");
-    save.className = "button2"
+    let title = UxUtils.getElement("h4");
+
+    let save = UxUtils.getElement("button");
+    UxUtils.setClass(save, "button2");
     UxUtils.addAttribute(save, { "id": "save" });
-    title.innerHTML = actionInstance.displayName;
-    save.innerHTML = "Save Changes";
+    UxUtils.setText(save, "Save Changes");
     save.style.float = "right";
+
     //Call update row API on Save button
     save.addEventListener("click", function () {
         updateDataRow();
     });
+
+    UxUtils.setText(title, actionInstance.displayName.toString());
+
     UxUtils.addElement(title, root);
     UxUtils.addElement(openItemDiv, root);
     UxUtils.addElement(addItemDiv, root);
@@ -48,13 +52,14 @@ function createBody() {
 
     createAddItemView();
     getCountOfItems();
-    var heading1 = document.createElement('h5');
-    heading1.innerHTML = "Open items (" + openItems + ")";
-    openItemDiv.appendChild(heading1);
 
-    var heading2 = document.createElement('h5');
-    heading2.innerHTML = "Completed items (" + completedItems + ")";
-    completeItemDiv.appendChild(heading2);
+    let heading1 = UxUtils.getElement("h5");
+    UxUtils.setText(heading1, "Open items (" + openItems + ")");
+    UxUtils.addElement(heading1, openItemDiv);
+
+    let heading2 = UxUtils.getElement("h5");
+    UxUtils.setText(heading2, "Completed items (" + completedItems + ")");
+    UxUtils.addElement(heading2, completeItemDiv);
 
     //Add open items
     createOpenItemsView();
@@ -66,15 +71,15 @@ function createBody() {
 
 //GetContext
 function OnPageLoad() {
-    /*let loader = loaderforPage();
-    UxUtils.addElement(loader, root);*/
+    let loader = loaderforPage();
+    UxUtils.addElement(loader, root);
     actionSDK.executeApi(new actionSDK.GetContext.Request())
         .then(function (response: actionSDK.GetContext.Response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             actionContext = response.context;
             userId = response.context.userId;
             getActionInstance(response.context.actionId);
-            //UxUtils.addCSS(loader, { "display": "none" });
+            UxUtils.addCSS(loader, { "display": "none" });
         })
         .catch(function (error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
@@ -83,18 +88,18 @@ function OnPageLoad() {
 
 //GetAction and GetActionDataRows
 function getActionInstance(actionId) {
-    /*let loader = loaderforPage();
-    UxUtils.addElement(loader, root);*/
+    let loader = loaderforPage();
+    UxUtils.addElement(loader, root);
 
-    var getActionRequest = new actionSDK.GetAction.Request(actionId);
-    var getDataRowsRequest = new actionSDK.GetActionDataRows.Request(actionId);
-    var batchRequest = new actionSDK.BaseApi.BatchRequest([getActionRequest, getDataRowsRequest]);
+    let getActionRequest = new actionSDK.GetAction.Request(actionId);
+    let getDataRowsRequest = new actionSDK.GetActionDataRows.Request(actionId);
+    let batchRequest = new actionSDK.BaseApi.BatchRequest([getActionRequest, getDataRowsRequest]);
     actionSDK.executeBatchApi(batchRequest)
         .then(function (batchResponse: actionSDK.BaseApi.BatchResponse) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
             actionInstance = (<actionSDK.GetAction.Response>batchResponse.responses[0]).action;
             actionDataRows = (<actionSDK.GetActionDataRows.Response>batchResponse.responses[1]).dataRows;
-            // UxUtils.addCSS(loader, { "display": "none" });
+            UxUtils.addCSS(loader, { "display": "none" });
             createBody();
         })
         .catch(function (error) {
@@ -109,9 +114,9 @@ function updateDataRow() {
         createAddRowsRequests(actionInstance.id);
     }
     //Post update close result view
-    var closeViewRequest = new actionSDK.CloseView.Request();
+    let closeViewRequest = new actionSDK.CloseView.Request();
     batchUpdateReq.push(closeViewRequest);
-    var batchRequest = new actionSDK.BaseApi.BatchRequest(batchUpdateReq);
+    let batchRequest = new actionSDK.BaseApi.BatchRequest(batchUpdateReq);
     actionSDK.executeBatchApi(batchRequest)
         .then(function (batchResponse: actionSDK.BaseApi.BatchResponse) {
             console.info("BatchResponse- Update: " + JSON.stringify(batchResponse));
@@ -125,12 +130,12 @@ function updateDataRow() {
 //CreateRequest to Add New Item
 function createAddRowsRequests(actionId) {
     let row = {};
-    for (var i = countNewItems - 1; i >= 0; i--) {
-        var itemId = i.toString();
-        var item = (<HTMLInputElement>document.getElementById(itemId)).value;
+    for (let i = countNewItems - 1; i >= 0; i--) {
+        let itemId = i.toString();
+        let item = (<HTMLInputElement>document.getElementById(itemId)).value;
         //Not to add deleted or empty items to rows
         if (isDeleted[i.toString()] == false && (Utils.isEmptyString(item.toString())) == false) {
-            var dataRow: actionSDK.ActionDataRow = {
+            let dataRow: actionSDK.ActionDataRow = {
                 id: Utils.generateGUID(),
                 actionId: actionId,
                 dataTableName: "TestDataSet",
@@ -149,7 +154,7 @@ function createAddRowsRequests(actionId) {
                 row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
             }
 
-            var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
+            let addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
             console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
             batchUpdateReq.push(addRowsRequest);
             row = {};//Reset to push next row's data
@@ -203,7 +208,7 @@ async function getCompletionUserDetails() {
                 memberIds.push(row.columnValues[ChecklistColumnType.completionUser]);
             }
         });
-        var request = new actionSDK.GetSubscriptionMembers.Request(actionContext.subscription, memberIds);
+        let request = new actionSDK.GetSubscriptionMembers.Request(actionContext.subscription, memberIds);
         console.info("GetSubscriptionMembers Request " + JSON.stringify(request));
         let response = await actionSDK.executeApi(request) as actionSDK.GetSubscriptionMembers.Response;
         subscriptionMembers = response.members;
@@ -250,7 +255,7 @@ function isValueUpdated(oldval, newval) {
 
 
 function dateConverter(timeStamp) {
-    var date = new Date(parseInt(timeStamp));
+    let date = new Date(parseInt(timeStamp));
     let hour = date.getHours();
     let min = date.getMinutes();
     return (date.toDateString() + ", " + hour + ":" + min);
@@ -261,14 +266,13 @@ function dateConverter(timeStamp) {
 
 //View for open items
 function createOpenItemsView() {
-    var column = ChecklistColumnType.checklistItem;
+    let column = ChecklistColumnType.checklistItem;
     actionDataRows.forEach((row) => {
         if (row.columnValues[ChecklistColumnType.status] == Status.ACTIVE) {
-            var itemDiv = document.createElement("div");
+            let itemDiv = UxUtils.getElement("div");
 
-            var checkbox = document.createElement("input");
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.setAttribute("id", row.id);
+            let checkbox = document.createElement("input");
+            UxUtils.addAttribute(checkbox, { "type": "checkbox", "id": row.id });
             checkbox.addEventListener("click", function () {
                 //Update the row
                 console.info("value of data status BEFORE" + JSON.stringify(row));
@@ -277,9 +281,8 @@ function createOpenItemsView() {
                 console.info("value of data status AFTER" + JSON.stringify(row));
             });
 
-            var item = document.createElement("input");
-            item.setAttribute("type", "item");
-            item.setAttribute("value", row.columnValues[column]);
+            let item = document.createElement("input");
+            UxUtils.addAttribute(item, { "type": "item", "value": row.columnValues[column] });
             item.addEventListener("change", function () {
                 console.info("value of data value BEFORE" + JSON.stringify(row));
                 if (isValueUpdated(row.columnValues[column], item.value)) {
@@ -290,9 +293,9 @@ function createOpenItemsView() {
             });
 
 
-            var del = document.createElement("BUTTON");
-            del.className = "button1";
-            del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+            let del = UxUtils.getElement("button");
+            UxUtils.setClass(del, "button1");
+            UxUtils.setText(del, '<i class="fa fa-trash-o" aria-hidden="true"></i>');
             del.addEventListener("click", function () {
                 updateStatusOfChecklistItem(row, true);
                 item.disabled = true;
@@ -300,10 +303,10 @@ function createOpenItemsView() {
                 createUpdateRequest(row);
             });
 
-            itemDiv.appendChild(checkbox);
-            itemDiv.appendChild(item);
-            itemDiv.appendChild(del);
-            openItemDiv.appendChild(itemDiv);
+            UxUtils.addElement(checkbox, itemDiv);
+            UxUtils.addElement(item, itemDiv);
+            UxUtils.addElement(del, itemDiv);
+            UxUtils.addElement(itemDiv, openItemDiv);
         }
     });
 }
@@ -311,10 +314,10 @@ function createOpenItemsView() {
 //Add Item View
 function createAddItemView() {
 
-    var plus = UxUtils.getElement("i");
+    let plus = UxUtils.getElement("i");
     UxUtils.setClass(plus, "fa fa-plus");
 
-    var add = UxUtils.getElement("input");
+    let add = UxUtils.getElement("input");
     UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });
 
     UxUtils.addElement(plus, addItemDiv);
@@ -326,17 +329,16 @@ function createAddItemView() {
 }
 
 function createNewItemDiv() {
-    var itemDiv = document.createElement("div");
-    var item = document.createElement("input");
-    item.setAttribute("type", "item");
-    item.setAttribute("value", "");
-    item.setAttribute("id", countNewItems.toString());
-    var itemId = item.id;
+    let itemDiv = UxUtils.getElement("div");
+    let item = document.createElement("input");
+    UxUtils.addAttribute(item, { "type": "item", "value": "", "id": countNewItems.toString() });
+
+    let itemId = item.id;
     isDeleted[itemId] = false;
     isCompleted[itemId] = false;
 
-    var checkbox = document.createElement("input");
-    checkbox.setAttribute("type", "checkbox");
+    let checkbox = document.createElement("input");
+    UxUtils.addAttribute(checkbox, { "type": "checkbox" });
     checkbox.addEventListener("click", function () {
         if (checkbox.checked == true) {
             isCompleted[itemId] = true;
@@ -346,18 +348,18 @@ function createNewItemDiv() {
         }
     });
 
-    var del = document.createElement("BUTTON");
-    del.className = "button1";
-    del.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+    let del = UxUtils.getElement("button");
+    UxUtils.setClass(del, "button1");
+    UxUtils.setText(del, '<i class="fa fa-trash-o" aria-hidden="true"></i>');
     del.addEventListener("click", function () {
         isDeleted[itemId] = true;
         item.disabled = true;
         checkbox.disabled = true;
     });
-    itemDiv.appendChild(checkbox);
-    itemDiv.appendChild(item);
-    itemDiv.appendChild(del);
-    openItemDiv.appendChild(itemDiv);
+    UxUtils.addElement(checkbox, itemDiv);
+    UxUtils.addElement(item, itemDiv);
+    UxUtils.addElement(del, itemDiv);
+    UxUtils.addElement(itemDiv, openItemDiv);
     countNewItems++;
 }
 
@@ -365,14 +367,12 @@ function createNewItemDiv() {
 async function createCompleteItemsView() {
     //First fetch user details
     await getCompletionUserDetails();
-    var column = ChecklistColumnType.checklistItem;
+    let column = ChecklistColumnType.checklistItem;
     actionDataRows.forEach((row) => {
         if (row.columnValues[ChecklistColumnType.status] == Status.COMPLETED) {
-            var itemDiv = document.createElement("div");
-            var checkbox = document.createElement("input");
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.setAttribute("id", row.id);
-            checkbox.setAttribute("checked", "true");
+            let itemDiv = UxUtils.getElement("div");
+            let checkbox = UxUtils.getElement("input");
+            UxUtils.addAttribute(checkbox, { "type": "checkbox", "id": row.id, "checked": "true" });
             checkbox.addEventListener("click", function () {
                 //Update the row
                 console.info("value of data row BEFORE" + JSON.stringify(row));
@@ -381,27 +381,26 @@ async function createCompleteItemsView() {
                 console.info("value of data row AFTER" + JSON.stringify(row));
             });
 
-            var item = document.createElement("input");
-            item.setAttribute("type", "item");
-            item.setAttribute("value", row.columnValues[column]);
-            item.setAttribute("readOnly", "true");
+            let item = UxUtils.getElement("input");
+            UxUtils.addAttribute(item, { "type": "item", "value": row.columnValues[column], "readOnly": "true" });
 
-            var completedBy = document.createElement("h6");
-            var time = dateConverter(row.columnValues[ChecklistColumnType.completionTime]);
-            var completionUser = getUserDisplayName(row.columnValues[ChecklistColumnType.completionUser]);
-            completedBy.innerHTML = "Completed by " + completionUser + " on " + time.toString();
+            let completedBy = UxUtils.getElement("h6");
+            let time = dateConverter(row.columnValues[ChecklistColumnType.completionTime]);
+            let completionUser = getUserDisplayName(row.columnValues[ChecklistColumnType.completionUser]);
+            UxUtils.setText(completedBy, "Completed by " + completionUser + " on " + time.toString());
 
-            itemDiv.appendChild(checkbox);
-            itemDiv.appendChild(item);
-            itemDiv.appendChild(completedBy);
+            UxUtils.addElement(checkbox, itemDiv);
+            UxUtils.addElement(item, itemDiv);
+            UxUtils.addElement(completedBy, itemDiv);
 
-            completeItemDiv.appendChild(itemDiv);
+            UxUtils.addElement(itemDiv, completeItemDiv);
         }
     });
 }
 
-/*function loaderforPage() {
+//Returns Loader for Page
+function loaderforPage() {
     let loader = UxUtils.getLoadingSpinner();
     UxUtils.addCSS(loader, { "position": "absolute", "left": "45%", "top": "45%", "width": "150pt", "height": "150pt", "margin": "-75px 0 0 -75px" });
     return loader;
-}*/
+}

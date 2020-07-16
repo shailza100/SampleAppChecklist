@@ -6,7 +6,6 @@ module.exports = (env) => {
     var config = {
         entry: {
             "CreateView": "./src/creationView/creation.ts",
-            "ResponseView": "./src/responseView/response.ts",
             "UpdateView": "./src/updateView/update.ts"
         },
         module: {

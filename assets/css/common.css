@@ -186,6 +186,69 @@ select {
 CSS for Spinner
 ---------------------------------------- */
 
+.loadingSpinnerAttributes {
+    border-width: 2pt solid;
+    border: 2pt solid #f1f2f4;
+    border-top: 2pt solid #6264a7;
+    border-radius: 50%;
+    width: 16pt;
+    height: 16pt;
+    animation: spin 1.5s ease-in-out infinite;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-bottom {
+    position: relative;
+    -webkit-animation-name: animatebottom;
+    -webkit-animation-duration: 1s;
+    animation-name: animatebottom;
+    animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+    from {
+        bottom: -100px;
+        opacity: 0
+    }
+    to {
+        bottom: 0px;
+        opacity: 1
+    }
+}
+
+@keyframes animatebottom {
+    from {
+        bottom: -100px;
+        opacity: 0
+    }
+    to {
+        bottom: 0;
+        opacity: 1
+    }
+}
+
+.contentEditableSpanAttributes {
+    word-break: break-word;
+    -webkit-user-select: text;
+}
+
 
 /* -------------------------------------
 CSS for Sidebar (optional)
