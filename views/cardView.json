@@ -22,7 +22,7 @@
             {
                 "id": "Count",
                 "type": "TextBlock",
-                "text": "Number of items in checklist : ${count(dataRows)}",
+                "text": "Number of items in checklist :  ${if(not(empty(dataRows)),count(dataRows),0)}",
                 "size": "small",
                 "maxLines": 3,
                 "wrap": true,
@@ -30,8 +30,20 @@
                 "spacing": "small"
             },
             {
-                "id": "Title2",
+                "id": "OpenItems1",
                 "type": "TextBlock",
+                "$when": "${equals(count(dataRows),0)}",
+                "text": "No open items",
+                "size": "small",
+                "maxLines": 3,
+                "wrap": true,
+                "weight": "bolder",
+                "spacing": "small"
+            },
+            {
+                "id": "OpenItems2",
+                "type": "TextBlock",
+                "$when": "${greater(count(dataRows), 0)}",
                 "text": "Open items",
                 "size": "small",
                 "maxLines": 3,
@@ -43,6 +55,7 @@
                 "id": "Items",
                 "type": "Container",
                 "style": "emphasis",
+                "$when": "${greater(count(dataRows), 0)}",
                 "items": [{
                     "type": "TextBlock",
                     "$data": "${dataRows}",
@@ -51,7 +64,6 @@
                     "wrap": true,
                     "size": "medium",
                     "spacing": "medium"
-
                 }]
             },
             {
@@ -82,12 +94,6 @@
             "command": "GetActionDataRows",
             "parameters": {
                 "pageSize": 10
-            }
-        },
-        "summary": {
-            "command": "GetActionDataRowsSummary",
-            "parameters": {
-                "addDefaultAggregates": true
             }
         },
         "creator": {

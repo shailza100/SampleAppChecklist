@@ -52,6 +52,22 @@ label {
     font-size: 16px;
 }
 
+.right {
+    float: right;
+}
+
+.floatleft {
+    float: left;
+}
+
+.left {
+    text-align: left;
+}
+
+.red {
+    color: red;
+}
+
 input[type="title"] {
     border-radius: 2px;
     width: 97%;
@@ -139,7 +155,7 @@ select {
     border: none;
     border-radius: 2px;
     color: white;
-    padding: 5px 35px;
+    padding: 5px 25px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -164,6 +180,11 @@ select {
     text-align: center;
     margin-bottom: 10px;
 }
+
+
+/* -------------------------------------
+CSS for Spinner
+---------------------------------------- */
 
 
 /* -------------------------------------

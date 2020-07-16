@@ -3,11 +3,13 @@ import { ChecklistColumnType, Status } from "./EnumContainer";
 import { Utils } from '../common/Utils';
 import { UxUtils } from "../common/UxUtils";
 
-var root = document.getElementById("root");
-var bodyDiv = UxUtils.getElement("div");
-var itemsDiv = UxUtils.getElement("div");
-var footerDiv = UxUtils.getElement("div");
+let root = document.getElementById("root");
+let bodyDiv = UxUtils.getElement("div");
+let itemsDiv = UxUtils.getElement("div");
+let footerDiv = UxUtils.getElement("div");
 UxUtils.setClass(footerDiv, "footer");
+let errDiv = UxUtils.getElement("div");
+
 
 let itemsCount = 0;
 let actionId = "";
@@ -15,13 +17,20 @@ let batchReq = [];
 let isDeleted = {};
 let isCompleted = {};
 let userId = "";
+let showError = false;
 
+/*
+* Entry Point for Building Up the Creation View
+*/
 OnPageLoad();
 
+/*
+* @desc Create and execute batch request to create actionInstance and add ActionDataRows
+*/
 function createAction(actionPackageId) {
 
-  var columns = createChecklistColumns();
-  var action = {
+  let columns = createChecklistColumns();
+  let action = {
     id: Utils.generateGUID(),
     actionPackageId: actionPackageId,
     version: 1,
@@ -41,12 +50,12 @@ function createAction(actionPackageId) {
   };
   actionId = action.id;
 
-  var createAction = new actionSDK.CreateAction.Request(action);
+  let createAction = new actionSDK.CreateAction.Request(action);
   batchReq.push(createAction);
   console.info("CreateAction - Request: " + JSON.stringify(action));
   getAddRowsRequests(actionId);
   console.info("BatchRequest - " + JSON.stringify(batchReq));
-  var batchRequest = new actionSDK.BaseApi.BatchRequest(batchReq);
+  let batchRequest = new actionSDK.BaseApi.BatchRequest(batchReq);
   actionSDK.executeBatchApi(batchRequest)
     .then(function (batchResponse) {
       console.info("Create Action and add rows BatchResponse: " + JSON.stringify(batchResponse));
@@ -57,15 +66,19 @@ function createAction(actionPackageId) {
 
 }
 
-//Add values for dataRows
+
+/*
+* @desc Add items to dataRows and create AddActionDataRow requests using the actionId for actionInstance
+*/
+
 function getAddRowsRequests(actionId) {
   let row = {};
-  for (var i = itemsCount - 1; i >= 0; i--) {
-    var item = (<HTMLInputElement>document.getElementById(i.toString())).value;
-    var itemId = i.toString();
+  for (let i = itemsCount - 1; i >= 0; i--) {
+    let item = (<HTMLInputElement>document.getElementById(i.toString())).value;
+    let itemId = i.toString();
     //Not to add deleted items to rows
     if (isDeleted[i.toString()] == false && (Utils.isEmptyString(item.toString())) == false) {
-      var dataRow: actionSDK.ActionDataRow = {
+      let dataRow: actionSDK.ActionDataRow = {
         id: Utils.generateGUID(),
         actionId: actionId,
         dataTableName: "TestDataSet",
@@ -85,7 +98,7 @@ function getAddRowsRequests(actionId) {
         row[ChecklistColumnType.completionUser.toString()] = userId;
         row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
       }
-      var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
+      let addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
       console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
       batchReq.push(addRowsRequest);
       row = {};//Reset to push next row's data
@@ -93,11 +106,14 @@ function getAddRowsRequests(actionId) {
   }
 }
 
-//Add values for dataColumns
+/*
+* @desc Create columns for checklist
+*/
+
 function createChecklistColumns() {
   let columns = new Array();
   for (let item in ChecklistColumnType) {
-    var checklistCol: actionSDK.ActionDataColumn = {
+    let checklistCol: actionSDK.ActionDataColumn = {
       name: item,
       valueType: actionSDK.ActionDataColumnValueType.Text,
       displayName: item,
@@ -125,41 +141,63 @@ function createChecklistColumns() {
 }
 
 function statusParams(state: Status) {
-  var optionActive: actionSDK.ActionDataColumnOption = {
+  let optionActive: actionSDK.ActionDataColumnOption = {
     name: state.toString(),
     displayName: state.toString(),
   };
   return optionActive;
 }
 
+/*
+* @desc Executes GetContext request
+*/
+
 function submitFormNew() {
-  actionSDK
-    .executeApi(new actionSDK.GetContext.Request())
-    .then(function (response: actionSDK.GetContext.Response) {
-      console.info("GetContext - Response: " + JSON.stringify(response));
-      userId = response.context.userId;
-      createAction(response.context.actionPackageId);
-    })
-    .catch(function (error) {
-      console.error("GetContext - Error: " + error.message);
-    });
+  if (isTitleValid()) {
+    actionSDK
+      .executeApi(new actionSDK.GetContext.Request())
+      .then(function (response: actionSDK.GetContext.Response) {
+        console.info("GetContext - Response: " + JSON.stringify(response));
+        userId = response.context.userId;
+        createAction(response.context.actionPackageId);
+      })
+      .catch(function (error) {
+        console.error("GetContext - Error: " + error.message);
+      });
+  }
+  else {
+    if (!showError)
+      showErrorMessage();
+  }
 
 }
 
-//HTML
-function OnPageLoad() {
 
+//..............HTML.............
+
+/**
+ * Render create view for checklist 
+ */
+
+function OnPageLoad() {
   UxUtils.addElement(UxUtils.getElement("hr"), root);
-  var title = UxUtils.createInputElement("Name your checklist", "ChecklistName", "title");
+  let title = UxUtils.createInputElement("Name your checklist", "ChecklistName", "title");
+  title.addEventListener("click", function () {
+    if (showError) {
+      removeErrorMessage();
+    }
+  });
+  UxUtils.addElement(errDiv, root);
   UxUtils.addElement(title, root);
   UxUtils.addElement(bodyDiv, root);
   UxUtils.addElement(itemsDiv, root);
   UxUtils.addElement(footerDiv, root);
 
-  var submit = UxUtils.getElement("BUTTON");
+  let submit = UxUtils.getElement("BUTTON");
   UxUtils.setClass(submit, "button2");
   UxUtils.setText(submit, "Next");
   submit.style.float = "right";
+  UxUtils.addAttribute(submit, { "id": "submit" });
   UxUtils.setClass(submit, "button2");
 
   UxUtils.addElement(addItem(), bodyDiv);//To add first item onPageLoad 
@@ -172,10 +210,14 @@ function OnPageLoad() {
   });
 }
 
-function addItem() {
-  var itemDiv = UxUtils.getElement("div");
+/**
+ * Render the items div to add items to checklist 
+ */
 
-  var item = UxUtils.getElement("input");
+function addItem() {
+  let itemDiv = UxUtils.getElement("div");
+
+  let item = UxUtils.getElement("input");
   UxUtils.addAttribute(item, { "type": "item", "value": "" });
   UxUtils.setId(item, itemsCount.toString());
 
@@ -183,7 +225,7 @@ function addItem() {
   isDeleted[itemId] = false;
   isCompleted[itemId] = false;
 
-  var checkbox = document.createElement("input");
+  let checkbox = document.createElement("input");
   UxUtils.addAttribute(checkbox, { "type": "checkbox" });
   checkbox.addEventListener("click", function () {
     if (checkbox.checked == true) {
@@ -194,7 +236,7 @@ function addItem() {
     }
   });
 
-  var del = UxUtils.getElement("BUTTON");
+  let del = UxUtils.getElement("BUTTON");
   UxUtils.setClass(del, "button1");
   UxUtils.setText(del, '<i class="fa fa-trash-o" style="font-size:15px"></i>');
 
@@ -212,13 +254,16 @@ function addItem() {
   return itemDiv;
 }
 
-function createAddItemDiv() {
-  var addItemDiv = UxUtils.getElement("div");
-  var plus = UxUtils.getElement("i");
-  UxUtils.setClass(plus, "fa fa-plus");
-  //UxUtils.setText(plus, '<i class="fa fa-plus" style="font-size:15px;color:#6264a7"></i>');
+/**
+ *  Render add item button to add more items to the checklist
+ */
 
-  var add = UxUtils.getElement("input");
+function createAddItemDiv() {
+  let addItemDiv = UxUtils.getElement("div");
+  let plus = UxUtils.getElement("i");
+  UxUtils.setClass(plus, "fa fa-plus");
+
+  let add = UxUtils.getElement("input");
   UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });
 
   UxUtils.addElement(plus, addItemDiv);
@@ -227,7 +272,50 @@ function createAddItemDiv() {
   addItemDiv.addEventListener("click", function () {
     UxUtils.addElement(addItem(), bodyDiv);
   });
-
-
   return addItemDiv;
+}
+
+
+/**
+ * Render alert when checklist title is empty
+ */
+function getErrorDiv(errorId: string, errorMessage: string) {
+  let errorDiv = UxUtils.getElement("div");
+  UxUtils.addAttribute(errorDiv, { "id": errorId });
+  UxUtils.setClass(errorDiv, "red right");
+  errorDiv.style.fontSize = "10px";
+  UxUtils.setText(errorDiv, errorMessage);
+  return errorDiv;
+}
+
+/**
+ * Check whether user has entered a valid checklist title or not
+ */
+function isTitleValid() {
+  let titleValue = (<HTMLInputElement>document.getElementById("ChecklistName")).value;
+  if (titleValue) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+/**
+ * Show alert to user
+ */
+function showErrorMessage() {
+  showError = true;
+  if (showError) {
+    let errorDiv = getErrorDiv("titleError", "Title cannot be left blank!");
+    UxUtils.addElement(errorDiv, errDiv);
+  }
+}
+
+/**
+ * Remove alert 
+ */
+function removeErrorMessage() {
+  (document.getElementById("titleError")).remove();
+  showError = false;
 }

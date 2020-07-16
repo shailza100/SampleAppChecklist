@@ -31,6 +31,7 @@ function createBody() {
     var title = document.createElement('h4');
     var save = document.createElement("BUTTON");
     save.className = "button2"
+    UxUtils.addAttribute(save, { "id": "save" });
     title.innerHTML = actionInstance.displayName;
     save.innerHTML = "Save Changes";
     save.style.float = "right";
@@ -65,12 +66,15 @@ function createBody() {
 
 //GetContext
 function OnPageLoad() {
+    /*let loader = loaderforPage();
+    UxUtils.addElement(loader, root);*/
     actionSDK.executeApi(new actionSDK.GetContext.Request())
         .then(function (response: actionSDK.GetContext.Response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             actionContext = response.context;
             userId = response.context.userId;
             getActionInstance(response.context.actionId);
+            //UxUtils.addCSS(loader, { "display": "none" });
         })
         .catch(function (error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
@@ -79,6 +83,9 @@ function OnPageLoad() {
 
 //GetAction and GetActionDataRows
 function getActionInstance(actionId) {
+    /*let loader = loaderforPage();
+    UxUtils.addElement(loader, root);*/
+
     var getActionRequest = new actionSDK.GetAction.Request(actionId);
     var getDataRowsRequest = new actionSDK.GetActionDataRows.Request(actionId);
     var batchRequest = new actionSDK.BaseApi.BatchRequest([getActionRequest, getDataRowsRequest]);
@@ -87,6 +94,7 @@ function getActionInstance(actionId) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
             actionInstance = (<actionSDK.GetAction.Response>batchResponse.responses[0]).action;
             actionDataRows = (<actionSDK.GetActionDataRows.Response>batchResponse.responses[1]).dataRows;
+            // UxUtils.addCSS(loader, { "display": "none" });
             createBody();
         })
         .catch(function (error) {
@@ -181,6 +189,7 @@ function updateValueOfChecklistItem(row: actionSDK.ActionDataRow, newVal) {
 //create a new upadte req
 function createUpdateRequest(row: actionSDK.ActionDataRow) {
     let updateReq = new actionSDK.UpdateActionDataRow.Request(row);
+    console.info("Update Row Request - " + JSON.stringify(updateReq));
     batchUpdateReq.push(updateReq);
 }
 
@@ -391,5 +400,8 @@ async function createCompleteItemsView() {
     });
 }
 
-
-
+/*function loaderforPage() {
+    let loader = UxUtils.getLoadingSpinner();
+    UxUtils.addCSS(loader, { "position": "absolute", "left": "45%", "top": "45%", "width": "150pt", "height": "150pt", "margin": "-75px 0 0 -75px" });
+    return loader;
+}*/
