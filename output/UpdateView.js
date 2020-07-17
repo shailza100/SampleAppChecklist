@@ -1561,6 +1561,7 @@ var UxUtils_1 = __webpack_require__(/*! ../common/UxUtils */ "./src/common/UxUti
 var Utils_1 = __webpack_require__(/*! ../common/Utils */ "./src/common/Utils.ts");
 var EnumContainer_1 = __webpack_require__(/*! ../creationView/EnumContainer */ "./src/creationView/EnumContainer.ts");
 var root = document.getElementById("root");
+var bodyDiv = UxUtils_1.UxUtils.getElement("div");
 var openItemDiv = UxUtils_1.UxUtils.getElement("div");
 var addItemDiv = UxUtils_1.UxUtils.getElement("div");
 var completeItemDiv = UxUtils_1.UxUtils.getElement("div");
@@ -1591,10 +1592,12 @@ function createBody() {
         updateDataRow();
     });
     UxUtils_1.UxUtils.setText(title, actionInstance.displayName.toString());
-    UxUtils_1.UxUtils.addElement(title, root);
-    UxUtils_1.UxUtils.addElement(openItemDiv, root);
-    UxUtils_1.UxUtils.addElement(addItemDiv, root);
-    UxUtils_1.UxUtils.addElement(completeItemDiv, root);
+    UxUtils_1.UxUtils.addElement(bodyDiv, root);
+    UxUtils_1.UxUtils.setClass(bodyDiv, "scrollUpdateView");
+    UxUtils_1.UxUtils.addElement(title, bodyDiv);
+    UxUtils_1.UxUtils.addElement(openItemDiv, bodyDiv);
+    UxUtils_1.UxUtils.addElement(addItemDiv, bodyDiv);
+    UxUtils_1.UxUtils.addElement(completeItemDiv, bodyDiv);
     UxUtils_1.UxUtils.addElement(footerDiv, root);
     UxUtils_1.UxUtils.addElement(save, footerDiv);
     createAddItemView();

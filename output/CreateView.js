@@ -1527,6 +1527,7 @@ var UxUtils_1 = __webpack_require__(/*! ../common/UxUtils */ "./src/common/UxUti
 var root = document.getElementById("root");
 var bodyDiv = UxUtils_1.UxUtils.getElement("div");
 var itemsDiv = UxUtils_1.UxUtils.getElement("div");
+var addDiv = UxUtils_1.UxUtils.getElement("div");
 var footerDiv = UxUtils_1.UxUtils.getElement("div");
 UxUtils_1.UxUtils.setClass(footerDiv, "footer");
 var errDiv = UxUtils_1.UxUtils.getElement("div");
@@ -1687,10 +1688,12 @@ function OnPageLoad() {
             removeErrorMessage();
         }
     });
+    UxUtils_1.UxUtils.setClass(bodyDiv, "scrollCreateview");
     UxUtils_1.UxUtils.addElement(errDiv, root);
     UxUtils_1.UxUtils.addElement(title, root);
     UxUtils_1.UxUtils.addElement(bodyDiv, root);
-    UxUtils_1.UxUtils.addElement(itemsDiv, root);
+    UxUtils_1.UxUtils.addElement(itemsDiv, bodyDiv);
+    UxUtils_1.UxUtils.addElement(addDiv, bodyDiv);
     UxUtils_1.UxUtils.addElement(footerDiv, root);
     var submit = UxUtils_1.UxUtils.getElement("BUTTON");
     UxUtils_1.UxUtils.setClass(submit, "button2");
@@ -1698,8 +1701,8 @@ function OnPageLoad() {
     submit.style.float = "right";
     UxUtils_1.UxUtils.addAttribute(submit, { "id": "submit" });
     UxUtils_1.UxUtils.setClass(submit, "button2");
-    UxUtils_1.UxUtils.addElement(addItem(), bodyDiv); //To add first item onPageLoad 
-    UxUtils_1.UxUtils.addElement(createAddItemDiv(), itemsDiv);
+    UxUtils_1.UxUtils.addElement(addItem(), itemsDiv); //To add first item onPageLoad 
+    UxUtils_1.UxUtils.addElement(createAddItemDiv(), addDiv);
     UxUtils_1.UxUtils.addElement(submit, footerDiv);
     submit.addEventListener("click", function () {
         submitFormNew();
@@ -1751,7 +1754,7 @@ function createAddItemDiv() {
     UxUtils_1.UxUtils.addElement(plus, addItemDiv);
     UxUtils_1.UxUtils.addElement(add, addItemDiv);
     addItemDiv.addEventListener("click", function () {
-        UxUtils_1.UxUtils.addElement(addItem(), bodyDiv);
+        UxUtils_1.UxUtils.addElement(addItem(), itemsDiv);
     });
     return addItemDiv;
 }

@@ -4,6 +4,7 @@ import { Utils } from '../common/Utils';
 import { ChecklistColumnType, Status } from "../creationView/EnumContainer";
 
 let root = document.getElementById("root");
+let bodyDiv = UxUtils.getElement("div");
 let openItemDiv = UxUtils.getElement("div");
 let addItemDiv = UxUtils.getElement("div");
 let completeItemDiv = UxUtils.getElement("div");
@@ -43,10 +44,14 @@ function createBody() {
 
     UxUtils.setText(title, actionInstance.displayName.toString());
 
-    UxUtils.addElement(title, root);
-    UxUtils.addElement(openItemDiv, root);
-    UxUtils.addElement(addItemDiv, root);
-    UxUtils.addElement(completeItemDiv, root);
+    UxUtils.addElement(bodyDiv, root);
+    UxUtils.setClass(bodyDiv, "scrollUpdateView");
+
+    UxUtils.addElement(title, bodyDiv);
+    UxUtils.addElement(openItemDiv, bodyDiv);
+    UxUtils.addElement(addItemDiv, bodyDiv);
+    UxUtils.addElement(completeItemDiv, bodyDiv);
+
     UxUtils.addElement(footerDiv, root);
     UxUtils.addElement(save, footerDiv);
 

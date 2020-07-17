@@ -6,6 +6,7 @@ import { UxUtils } from "../common/UxUtils";
 let root = document.getElementById("root");
 let bodyDiv = UxUtils.getElement("div");
 let itemsDiv = UxUtils.getElement("div");
+let addDiv = UxUtils.getElement("div");
 let footerDiv = UxUtils.getElement("div");
 UxUtils.setClass(footerDiv, "footer");
 let errDiv = UxUtils.getElement("div");
@@ -187,10 +188,13 @@ function OnPageLoad() {
       removeErrorMessage();
     }
   });
+  UxUtils.setClass(bodyDiv, "scrollCreateview");
+
   UxUtils.addElement(errDiv, root);
   UxUtils.addElement(title, root);
   UxUtils.addElement(bodyDiv, root);
-  UxUtils.addElement(itemsDiv, root);
+  UxUtils.addElement(itemsDiv, bodyDiv);
+  UxUtils.addElement(addDiv, bodyDiv);
   UxUtils.addElement(footerDiv, root);
 
   let submit = UxUtils.getElement("BUTTON");
@@ -200,8 +204,8 @@ function OnPageLoad() {
   UxUtils.addAttribute(submit, { "id": "submit" });
   UxUtils.setClass(submit, "button2");
 
-  UxUtils.addElement(addItem(), bodyDiv);//To add first item onPageLoad 
-  UxUtils.addElement(createAddItemDiv(), itemsDiv);
+  UxUtils.addElement(addItem(), itemsDiv);//To add first item onPageLoad 
+  UxUtils.addElement(createAddItemDiv(), addDiv);
 
   UxUtils.addElement(submit, footerDiv);
 
@@ -270,7 +274,7 @@ function createAddItemDiv() {
   UxUtils.addElement(add, addItemDiv);
 
   addItemDiv.addEventListener("click", function () {
-    UxUtils.addElement(addItem(), bodyDiv);
+    UxUtils.addElement(addItem(), itemsDiv);
   });
   return addItemDiv;
 }

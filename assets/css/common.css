@@ -155,7 +155,7 @@ select {
     border: none;
     border-radius: 2px;
     color: white;
-    padding: 5px 25px;
+    padding: 5px 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -183,8 +183,22 @@ select {
 
 
 /* -------------------------------------
-CSS for Spinner
+CSS for Spinner and ScrollBar
 ---------------------------------------- */
+
+.scrollCreateview {
+    height: 350px;
+    overflow: auto;
+    width: 85vw;
+    padding-right: 15px;
+}
+
+.scrollUpdateView {
+    height: 400px;
+    overflow: auto;
+    width: 85vw;
+    padding-right: 15px;
+}
 
 .loadingSpinnerAttributes {
     border-width: 2pt solid;
