@@ -52,18 +52,13 @@
                 "spacing": "small"
             },
             {
-                "id": "Items",
                 "type": "Container",
                 "style": "emphasis",
-                "$when": "${greater(count(dataRows), 0)}",
+                "$data": "${dataRows}",
+                "$when": "${equals(columnValues['status'],'ACTIVE')}",
                 "items": [{
                     "type": "TextBlock",
-                    "$data": "${dataRows}",
-                    "$when": "${equals(columnValues['status'],'ACTIVE')}",
-                    "text": "${columnValues['checklistItem']}",
-                    "wrap": true,
-                    "size": "medium",
-                    "spacing": "medium"
+                    "text": "${columnValues['checklistItem']}"
                 }]
             },
             {

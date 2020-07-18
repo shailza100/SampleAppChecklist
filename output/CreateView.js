@@ -1435,6 +1435,17 @@ var UxUtils = /** @class */ (function () {
         document.getElementsByTagName('head')[0].appendChild(style);
         this.spinnerCSSAdded = true;
     };
+    /*
+    *   @desc Creates an input element with placeholder, id and value provided as paramter which can be used as Title
+    *   @param ph - placeholder for the input tag: string
+    *   @param id - id of HTML element: string
+    *   @return HTML input element
+    */
+    UxUtils.createTitle = function (ph, id) {
+        var inputelement = document.createElement('input');
+        this.addAttribute(inputelement, { "type": "title", "value": "", "id": id, placeholder: ph });
+        return inputelement;
+    };
     UxUtils.DEFAULT_SPACE_LENGTH = "10pt";
     UxUtils.DEFAULT_IMAGE_DIMEN = "50pt";
     UxUtils.spinnerCSSAdded = false;
@@ -1531,7 +1542,7 @@ var addDiv = UxUtils_1.UxUtils.getElement("div");
 var footerDiv = UxUtils_1.UxUtils.getElement("div");
 UxUtils_1.UxUtils.setClass(footerDiv, "footer");
 var errDiv = UxUtils_1.UxUtils.getElement("div");
-var itemsCount = 0;
+var itemsCount = 0; //As one item div is rendered on Page load.
 var actionId = "";
 var batchReq = [];
 var isDeleted = {};
@@ -1682,7 +1693,7 @@ function submitFormNew() {
  */
 function OnPageLoad() {
     UxUtils_1.UxUtils.addElement(UxUtils_1.UxUtils.getElement("hr"), root);
-    var title = UxUtils_1.UxUtils.createInputElement("Name your checklist", "ChecklistName", "title");
+    var title = UxUtils_1.UxUtils.createTitle("Name your checklist", "ChecklistName");
     title.addEventListener("click", function () {
         if (showError) {
             removeErrorMessage();
@@ -1701,7 +1712,7 @@ function OnPageLoad() {
     submit.style.float = "right";
     UxUtils_1.UxUtils.addAttribute(submit, { "id": "submit" });
     UxUtils_1.UxUtils.setClass(submit, "button2");
-    UxUtils_1.UxUtils.addElement(addItem(), itemsDiv); //To add first item onPageLoad 
+    addItem(); //To add first item onPageLoad 
     UxUtils_1.UxUtils.addElement(createAddItemDiv(), addDiv);
     UxUtils_1.UxUtils.addElement(submit, footerDiv);
     submit.addEventListener("click", function () {
@@ -1739,8 +1750,9 @@ function addItem() {
     UxUtils_1.UxUtils.addElement(checkbox, itemDiv);
     UxUtils_1.UxUtils.addElement(item, itemDiv);
     UxUtils_1.UxUtils.addElement(del, itemDiv);
+    UxUtils_1.UxUtils.addElement(itemDiv, itemsDiv);
+    document.getElementById(itemsCount.toString()).focus(); //Move focus to latest item.
     itemsCount++;
-    return itemDiv;
 }
 /**
  *  Render add item button to add more items to the checklist
@@ -1754,7 +1766,7 @@ function createAddItemDiv() {
     UxUtils_1.UxUtils.addElement(plus, addItemDiv);
     UxUtils_1.UxUtils.addElement(add, addItemDiv);
     addItemDiv.addEventListener("click", function () {
-        UxUtils_1.UxUtils.addElement(addItem(), itemsDiv);
+        addItem();
     });
     return addItemDiv;
 }

@@ -1435,6 +1435,17 @@ var UxUtils = /** @class */ (function () {
         document.getElementsByTagName('head')[0].appendChild(style);
         this.spinnerCSSAdded = true;
     };
+    /*
+    *   @desc Creates an input element with placeholder, id and value provided as paramter which can be used as Title
+    *   @param ph - placeholder for the input tag: string
+    *   @param id - id of HTML element: string
+    *   @return HTML input element
+    */
+    UxUtils.createTitle = function (ph, id) {
+        var inputelement = document.createElement('input');
+        this.addAttribute(inputelement, { "type": "title", "value": "", "id": id, placeholder: ph });
+        return inputelement;
+    };
     UxUtils.DEFAULT_SPACE_LENGTH = "10pt";
     UxUtils.DEFAULT_IMAGE_DIMEN = "50pt";
     UxUtils.spinnerCSSAdded = false;
@@ -1883,6 +1894,7 @@ function createNewItemDiv() {
     UxUtils_1.UxUtils.addElement(item, itemDiv);
     UxUtils_1.UxUtils.addElement(del, itemDiv);
     UxUtils_1.UxUtils.addElement(itemDiv, openItemDiv);
+    document.getElementById(countNewItems.toString()).focus(); //Move focus to latest item.
     countNewItems++;
 }
 //View for completed items

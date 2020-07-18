@@ -365,6 +365,8 @@ function createNewItemDiv() {
     UxUtils.addElement(item, itemDiv);
     UxUtils.addElement(del, itemDiv);
     UxUtils.addElement(itemDiv, openItemDiv);
+
+    document.getElementById(countNewItems.toString()).focus();//Move focus to latest item.
     countNewItems++;
 }
 

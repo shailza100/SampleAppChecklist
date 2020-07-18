@@ -534,4 +534,16 @@ export class UxUtils {
         document.getElementsByTagName('head')[0].appendChild(style);
         this.spinnerCSSAdded = true;
     }
+
+    /*
+    *   @desc Creates an input element with placeholder, id and value provided as paramter which can be used as Title
+    *   @param ph - placeholder for the input tag: string
+    *   @param id - id of HTML element: string
+    *   @return HTML input element
+    */
+   public static createTitle(ph: string, id: string) {
+    var inputelement = document.createElement('input');
+    this.addAttribute(inputelement, { "type": "title", "value": "", "id": id, placeholder: ph });
+    return inputelement;
+}
 }

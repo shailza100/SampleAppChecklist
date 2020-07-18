@@ -12,7 +12,7 @@ UxUtils.setClass(footerDiv, "footer");
 let errDiv = UxUtils.getElement("div");
 
 
-let itemsCount = 0;
+let itemsCount = 0;//As one item div is rendered on Page load.
 let actionId = "";
 let batchReq = [];
 let isDeleted = {};
@@ -182,7 +182,7 @@ function submitFormNew() {
 
 function OnPageLoad() {
   UxUtils.addElement(UxUtils.getElement("hr"), root);
-  let title = UxUtils.createInputElement("Name your checklist", "ChecklistName", "title");
+  let title = UxUtils.createTitle("Name your checklist", "ChecklistName");
   title.addEventListener("click", function () {
     if (showError) {
       removeErrorMessage();
@@ -204,7 +204,7 @@ function OnPageLoad() {
   UxUtils.addAttribute(submit, { "id": "submit" });
   UxUtils.setClass(submit, "button2");
 
-  UxUtils.addElement(addItem(), itemsDiv);//To add first item onPageLoad 
+  addItem();//To add first item onPageLoad 
   UxUtils.addElement(createAddItemDiv(), addDiv);
 
   UxUtils.addElement(submit, footerDiv);
@@ -252,10 +252,9 @@ function addItem() {
   UxUtils.addElement(checkbox, itemDiv);
   UxUtils.addElement(item, itemDiv);
   UxUtils.addElement(del, itemDiv);
-
+  UxUtils.addElement(itemDiv,itemsDiv);
+  document.getElementById(itemsCount.toString()).focus();//Move focus to latest item.
   itemsCount++;
-
-  return itemDiv;
 }
 
 /**
@@ -274,7 +273,7 @@ function createAddItemDiv() {
   UxUtils.addElement(add, addItemDiv);
 
   addItemDiv.addEventListener("click", function () {
-    UxUtils.addElement(addItem(), itemsDiv);
+    addItem();
   });
   return addItemDiv;
 }
