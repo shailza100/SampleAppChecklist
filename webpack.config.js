@@ -6,7 +6,8 @@ module.exports = (env) => {
     var config = {
         entry: {
             "CreateView": "./src/creationView/creation.ts",
-            "UpdateView": "./src/updateView/update.ts"
+            "UpdateView": "./src/updateView/update.ts",
+            "DetailView": "./src/detailView/detail.ts"
         },
         module: {
             rules: [{

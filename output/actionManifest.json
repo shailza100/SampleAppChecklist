@@ -9,7 +9,7 @@
         "termsOfUseUrl": "https://www.microsoft.com/app-tos"
     },
     "icon": "images/appIcon.png",
-    "version": "1.0.168",
+    "version": "1.0.172",
     "actionModel": "actionModel.json",
     "views": {
         "CardView": {
@@ -22,6 +22,10 @@
         "UpdateView": {
             "sourceLocation": "updateView.html",
             "header": " Edit the checklist"
+        },
+        "DetailView": {
+            "sourceLocation": "detailView.html",
+            "header": " View checklist"
         }
 
     },

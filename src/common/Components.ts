@@ -12,9 +12,10 @@ export class Components {
         let button = UxUtils.getElement("button");
         UxUtils.setClass(button,"nonebg-button settingButton");
         UxUtils.setText(button, "...");
-
+        let options=null;
         // dropdown for due date settings
-        let options = [ {
+        if(actionInstance.status=="Active"){
+         options = [ {
             text: data.close.text,
             callback: closeEvent
         },
@@ -22,7 +23,15 @@ export class Components {
              text:data.delete.text,
              callback:deleteEvent
         }]
+    }
+    else{
+         options = [ 
+         {
+             text:data.delete.text,
+             callback:deleteEvent
+        }]
 
+    }
         let dropdown = UxUtils.getDropDown(options);
 
         let closeDiv = this.getCloseModal(actionInstance, "Are you sure you want to close this Checklist?" );

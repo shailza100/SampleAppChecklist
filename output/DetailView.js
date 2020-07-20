@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/updateView/update.ts");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/detailView/detail.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -2129,9 +2129,9 @@ var ChecklistItemState;
 
 /***/ }),
 
-/***/ "./src/updateView/update.ts":
+/***/ "./src/detailView/detail.ts":
 /*!**********************************!*\
-  !*** ./src/updateView/update.ts ***!
+  !*** ./src/detailView/detail.ts ***!
   \**********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -2196,13 +2196,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var actionSDK = __importStar(__webpack_require__(/*! action-sdk-sunny */ "./node_modules/action-sdk-sunny/dist/ActionSDK.min.js"));
 var UxUtils_1 = __webpack_require__(/*! ../common/UxUtils */ "./src/common/UxUtils.ts");
-var Utils_1 = __webpack_require__(/*! ../common/Utils */ "./src/common/Utils.ts");
 var EnumContainer_1 = __webpack_require__(/*! ../creationView/EnumContainer */ "./src/creationView/EnumContainer.ts");
 var Components_1 = __webpack_require__(/*! ../common/Components */ "./src/common/Components.ts");
 var root = document.getElementById("root");
 var bodyDiv = UxUtils_1.UxUtils.getElement("div");
 var openItemDiv = UxUtils_1.UxUtils.getElement("div");
-var addItemDiv = UxUtils_1.UxUtils.getElement("div");
 var completeItemDiv = UxUtils_1.UxUtils.getElement("div");
 var footerDiv = UxUtils_1.UxUtils.getElement("div");
 UxUtils_1.UxUtils.setClass(footerDiv, "footer");
@@ -2212,10 +2210,6 @@ var actionContext = null;
 var subscriptionMembers = [];
 var openItems = 0;
 var completedItems = 0;
-var batchUpdateReq = [];
-var countNewItems = 0;
-var isDeleted = {};
-var isCompleted = {};
 var userId = "";
 OnPageLoad();
 function createBody() {
@@ -2226,22 +2220,18 @@ function createBody() {
     UxUtils_1.UxUtils.addAttribute(save, { "id": "save" });
     UxUtils_1.UxUtils.setText(save, "Save Changes");
     save.style.float = "right";
-    //Call update row API on Save button
-    save.addEventListener("click", function () {
-        updateDataRow();
-    });
+    save.style.pointerEvents = "none";
+    save.style.opacity = "0.4";
     UxUtils_1.UxUtils.setText(title, actionInstance.displayName.toString());
     UxUtils_1.UxUtils.addElement(bodyDiv, root);
     UxUtils_1.UxUtils.setClass(bodyDiv, "scrollUpdateView");
     UxUtils_1.UxUtils.addElement(title, bodyDiv);
     if (actionContext.userId == actionInstance.creatorId)
-        UxUtils_1.UxUtils.addElement(getChangeSettingView(), bodyDiv); //Add the Close/Delete checklist dropdown
+        UxUtils_1.UxUtils.addElement(getDeleteSettingView(), bodyDiv); //Add the Close/Delete checklist dropdown
     UxUtils_1.UxUtils.addElement(openItemDiv, bodyDiv);
-    UxUtils_1.UxUtils.addElement(addItemDiv, bodyDiv);
     UxUtils_1.UxUtils.addElement(completeItemDiv, bodyDiv);
     UxUtils_1.UxUtils.addElement(footerDiv, root);
     UxUtils_1.UxUtils.addElement(save, footerDiv);
-    createAddItemView();
     getCountOfItems();
     var heading1 = UxUtils_1.UxUtils.getElement("h5");
     UxUtils_1.UxUtils.setText(heading1, "Open items (" + openItems + ")");
@@ -2288,92 +2278,6 @@ function getActionInstance(actionId) {
         .catch(function (error) {
         console.error("BatchResponse: " + JSON.stringify(error));
     });
-}
-//UpdateActionDataRow in Batch for all items
-function updateDataRow() {
-    //Add new data row
-    if (countNewItems > 0) {
-        createAddRowsRequests(actionInstance.id);
-    }
-    //Post update close result view
-    var closeViewRequest = new actionSDK.CloseView.Request();
-    batchUpdateReq.push(closeViewRequest);
-    var batchRequest = new actionSDK.BaseApi.BatchRequest(batchUpdateReq);
-    actionSDK.executeBatchApi(batchRequest)
-        .then(function (batchResponse) {
-        console.info("BatchResponse- Update: " + JSON.stringify(batchResponse));
-    })
-        .catch(function (error) {
-        console.error("BatchResponse- Update: " + JSON.stringify(error));
-    });
-}
-//CreateRequest to Add New Item
-function createAddRowsRequests(actionId) {
-    var row = {};
-    for (var i = countNewItems - 1; i >= 0; i--) {
-        var itemId = i.toString();
-        var item = document.getElementById(itemId).value;
-        //Not to add deleted or empty items to rows
-        if (isDeleted[i.toString()] == false && (Utils_1.Utils.isEmptyString(item.toString())) == false) {
-            var dataRow = {
-                id: Utils_1.Utils.generateGUID(),
-                actionId: actionId,
-                dataTableName: "TestDataSet",
-                columnValues: row
-            };
-            row[EnumContainer_1.ChecklistColumnType.checklistItem.toString()] = item;
-            if (isCompleted[itemId] == true) {
-                row[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.COMPLETED;
-            }
-            else {
-                row[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
-            }
-            row[EnumContainer_1.ChecklistColumnType.creationUser.toString()] = userId;
-            row[EnumContainer_1.ChecklistColumnType.creationTime.toString()] = new Date().getTime().toString();
-            if (row[EnumContainer_1.ChecklistColumnType.status.toString()] == EnumContainer_1.Status.COMPLETED) {
-                row[EnumContainer_1.ChecklistColumnType.completionUser.toString()] = userId;
-                row[EnumContainer_1.ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
-            }
-            var addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
-            console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
-            batchUpdateReq.push(addRowsRequest);
-            row = {}; //Reset to push next row's data
-        }
-    }
-}
-// Update status for a row
-function updateStatusOfChecklistItem(row, isDeleted) {
-    if (isDeleted === void 0) { isDeleted = false; }
-    var statusCol = EnumContainer_1.ChecklistColumnType.status.toString();
-    var currentStatus = row.columnValues[statusCol];
-    if (currentStatus == EnumContainer_1.Status.ACTIVE && isDeleted == false) {
-        row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.COMPLETED;
-        row.columnValues[EnumContainer_1.ChecklistColumnType.completionUser.toString()] = userId;
-        row.columnValues[EnumContainer_1.ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
-    }
-    else if (currentStatus == EnumContainer_1.Status.COMPLETED && isDeleted == false) {
-        row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.ACTIVE;
-    }
-    else if (isDeleted == true) {
-        row.columnValues[EnumContainer_1.ChecklistColumnType.status.toString()] = EnumContainer_1.Status.DELETED;
-        row.columnValues[EnumContainer_1.ChecklistColumnType.deletionUser.toString()] = userId;
-        row.columnValues[EnumContainer_1.ChecklistColumnType.deletionTime.toString()] = new Date().getTime().toString();
-    }
-    row.columnValues[EnumContainer_1.ChecklistColumnType.latestEditUser.toString()] = userId;
-    row.columnValues[EnumContainer_1.ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
-}
-//Update value for a row
-function updateValueOfChecklistItem(row, newVal) {
-    var itemCol = EnumContainer_1.ChecklistColumnType.checklistItem.toString();
-    row.columnValues[itemCol] = newVal;
-    row.columnValues[EnumContainer_1.ChecklistColumnType.latestEditUser.toString()] = userId;
-    row.columnValues[EnumContainer_1.ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
-}
-//create a new upadte req
-function createUpdateRequest(row) {
-    var updateReq = new actionSDK.UpdateActionDataRow.Request(row);
-    console.info("Update Row Request - " + JSON.stringify(updateReq));
-    batchUpdateReq.push(updateReq);
 }
 //Get user details who completed the item
 function getCompletionUserDetails() {
@@ -2427,14 +2331,6 @@ function getCountOfItems() {
         }
     });
 }
-//Check if value of item is updated or not
-function isValueUpdated(oldval, newval) {
-    console.info("Old value " + oldval + " new value " + newval);
-    if (oldval != newval)
-        return true;
-    else
-        return false;
-}
 function dateConverter(timeStamp) {
     var date = new Date(parseInt(timeStamp));
     var hour = date.getHours();
@@ -2448,84 +2344,21 @@ function createOpenItemsView() {
     actionDataRows.forEach(function (row) {
         if (row.columnValues[EnumContainer_1.ChecklistColumnType.status] == EnumContainer_1.Status.ACTIVE) {
             var itemDiv = UxUtils_1.UxUtils.getElement("div");
-            var checkbox_1 = document.createElement("input");
-            UxUtils_1.UxUtils.addAttribute(checkbox_1, { "type": "checkbox", "id": row.id });
-            checkbox_1.addEventListener("click", function () {
-                //Update the row
-                console.info("value of data status BEFORE" + JSON.stringify(row));
-                updateStatusOfChecklistItem(row);
-                createUpdateRequest(row);
-                console.info("value of data status AFTER" + JSON.stringify(row));
-            });
-            var item_1 = document.createElement("input");
-            UxUtils_1.UxUtils.addAttribute(item_1, { "type": "item", "value": row.columnValues[column] });
-            item_1.addEventListener("change", function () {
-                console.info("value of data value BEFORE" + JSON.stringify(row));
-                if (isValueUpdated(row.columnValues[column], item_1.value)) {
-                    updateValueOfChecklistItem(row, item_1.value);
-                    createUpdateRequest(row);
-                    console.info("value of data value AFTER" + JSON.stringify(row));
-                }
-            });
+            itemDiv.style.pointerEvents = "none";
+            // itemDiv.style.opacity="0.4";
+            var checkbox = document.createElement("input");
+            UxUtils_1.UxUtils.addAttribute(checkbox, { "type": "checkbox", "id": row.id });
+            var item = document.createElement("input");
+            UxUtils_1.UxUtils.addAttribute(item, { "type": "item", "value": row.columnValues[column] });
             var del = UxUtils_1.UxUtils.getElement("button");
             UxUtils_1.UxUtils.setClass(del, "button1");
             UxUtils_1.UxUtils.setText(del, '<i class="fa fa-trash-o" aria-hidden="true"></i>');
-            del.addEventListener("click", function () {
-                updateStatusOfChecklistItem(row, true);
-                item_1.disabled = true;
-                checkbox_1.disabled = true;
-                createUpdateRequest(row);
-            });
-            UxUtils_1.UxUtils.addElement(checkbox_1, itemDiv);
-            UxUtils_1.UxUtils.addElement(item_1, itemDiv);
+            UxUtils_1.UxUtils.addElement(checkbox, itemDiv);
+            UxUtils_1.UxUtils.addElement(item, itemDiv);
             UxUtils_1.UxUtils.addElement(del, itemDiv);
             UxUtils_1.UxUtils.addElement(itemDiv, openItemDiv);
         }
     });
-}
-//Add Item View
-function createAddItemView() {
-    var plus = UxUtils_1.UxUtils.getElement("i");
-    UxUtils_1.UxUtils.setClass(plus, "fa fa-plus");
-    var add = UxUtils_1.UxUtils.getElement("input");
-    UxUtils_1.UxUtils.addAttribute(add, { "type": "additem", "value": "Add Item", "readonly": "true" });
-    UxUtils_1.UxUtils.addElement(plus, addItemDiv);
-    UxUtils_1.UxUtils.addElement(add, addItemDiv);
-    addItemDiv.addEventListener("click", function () {
-        createNewItemDiv();
-    });
-}
-function createNewItemDiv() {
-    var itemDiv = UxUtils_1.UxUtils.getElement("div");
-    var item = document.createElement("input");
-    UxUtils_1.UxUtils.addAttribute(item, { "type": "item", "value": "", "id": countNewItems.toString() });
-    var itemId = item.id;
-    isDeleted[itemId] = false;
-    isCompleted[itemId] = false;
-    var checkbox = document.createElement("input");
-    UxUtils_1.UxUtils.addAttribute(checkbox, { "type": "checkbox" });
-    checkbox.addEventListener("click", function () {
-        if (checkbox.checked == true) {
-            isCompleted[itemId] = true;
-        }
-        else {
-            isCompleted[itemId] = false;
-        }
-    });
-    var del = UxUtils_1.UxUtils.getElement("button");
-    UxUtils_1.UxUtils.setClass(del, "button1");
-    UxUtils_1.UxUtils.setText(del, '<i class="fa fa-trash-o" aria-hidden="true"></i>');
-    del.addEventListener("click", function () {
-        isDeleted[itemId] = true;
-        item.disabled = true;
-        checkbox.disabled = true;
-    });
-    UxUtils_1.UxUtils.addElement(checkbox, itemDiv);
-    UxUtils_1.UxUtils.addElement(item, itemDiv);
-    UxUtils_1.UxUtils.addElement(del, itemDiv);
-    UxUtils_1.UxUtils.addElement(itemDiv, openItemDiv);
-    document.getElementById(countNewItems.toString()).focus(); //Move focus to latest item.
-    countNewItems++;
 }
 //View for completed items
 function createCompleteItemsView() {
@@ -2543,15 +2376,10 @@ function createCompleteItemsView() {
                     actionDataRows.forEach(function (row) {
                         if (row.columnValues[EnumContainer_1.ChecklistColumnType.status] == EnumContainer_1.Status.COMPLETED) {
                             var itemDiv = UxUtils_1.UxUtils.getElement("div");
+                            itemDiv.style.pointerEvents = "none";
+                            // itemDiv.style.opacity="0.4";
                             var checkbox = UxUtils_1.UxUtils.getElement("input");
                             UxUtils_1.UxUtils.addAttribute(checkbox, { "type": "checkbox", "id": row.id, "checked": "true" });
-                            checkbox.addEventListener("click", function () {
-                                //Update the row
-                                console.info("value of data row BEFORE" + JSON.stringify(row));
-                                updateStatusOfChecklistItem(row);
-                                createUpdateRequest(row);
-                                console.info("value of data row AFTER" + JSON.stringify(row));
-                            });
                             var item = UxUtils_1.UxUtils.getElement("input");
                             UxUtils_1.UxUtils.addAttribute(item, { "type": "item", "value": row.columnValues[column], "readOnly": "true" });
                             var completedBy = UxUtils_1.UxUtils.getElement("h6");
@@ -2569,11 +2397,8 @@ function createCompleteItemsView() {
         });
     });
 }
-function getChangeSettingView() {
+function getDeleteSettingView() {
     var data = {
-        close: {
-            text: "Close Checklist"
-        },
         delete: {
             text: "Delete Checklist"
         }
@@ -2591,4 +2416,4 @@ function loaderforPage() {
 /***/ })
 
 /******/ });
-//# sourceMappingURL=UpdateView.js.map
+//# sourceMappingURL=DetailView.js.map
