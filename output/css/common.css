@@ -1,6 +1,12 @@
 /* Below line is write to use Google font online */
 
 @import "https://fonts.googleapis.com/css?family=Ubuntu";
+:root {
+    --primaryColor: #6264A7;
+    --secondaryColor: #f3f2f1;
+    --fontFamily: "Segoe UI", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", Helvetica, Arial, sans-serif;
+}
+
 div#main {
     width: 830px;
     height: 650px;
@@ -66,6 +72,36 @@ label {
 
 .red {
     color: red;
+}
+
+.smallerSize {
+    font-size: smaller;
+}
+
+.rightMargin {
+    margin-right: 10px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.settingButton {
+    font-size: x-large;
+    margin-right: 10px;
+    margin-top: -8px;
+}
+
+.nonebg-button {
+    outline: none;
+    border: none;
+    box-shadow: none;
+    color: var(--primaryColor);
+    background: none;
+    font-size: small;
+    font-weight: normal !important;
+    padding: unset;
+    cursor: pointer;
 }
 
 input[type="title"] {
@@ -179,6 +215,99 @@ select {
     color: white;
     text-align: center;
     margin-bottom: 10px;
+}
+
+.primary-button {
+    background-color: var(--primaryColor);
+    color: var(--secondaryColor);
+    font-weight: bold;
+    border: .1rem solid transparent;
+    border-radius: 3px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-family: var(--fontFamily) !important;
+}
+
+.secondary-button {
+    background-color: var(--secondaryColor);
+    color: black;
+    font-weight: bold;
+    border: .1rem solid transparent;
+    border-radius: 3px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-family: var(--fontFamily) !important;
+}
+
+.dropbtn:hover,
+.dropbtn:focus {
+    background-color: var(--primaryColor);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 30px;
+    background-color: #f1f1f1;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    cursor: pointer;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 15px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+.dropdown a:hover {
+    background-color: #ddd;
+}
+
+.show {
+    display: block;
+}
+
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+
+/* Modal Content */
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 25px;
+    border: 1px solid #888;
+    width: 32%;
+}
+
+.overFlowInput {
+    max-height: 67vh;
+    overflow-y: auto;
 }
 
 

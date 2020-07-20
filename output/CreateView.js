@@ -1446,6 +1446,69 @@ var UxUtils = /** @class */ (function () {
         this.addAttribute(inputelement, { "type": "title", "value": "", "id": id, placeholder: ph });
         return inputelement;
     };
+    /**
+        * Method to create dropdown
+        * @param options options we want to show in dropdown contains (text and click event )
+        */
+    UxUtils.getDropDown = function (options) {
+        //  let div = UxUtils.getDiv({ class: "dropdown-content", id: "myDropdown" });
+        var div = UxUtils.getElement("div");
+        UxUtils.setClass(div, "dropdown-content");
+        div.id = "myDropdown";
+        options.forEach(function (option) {
+            var a = UxUtils.getElement("a");
+            UxUtils.setText(a, option.text);
+            UxUtils.addClickEvent(a, option.callback);
+            UxUtils.addElement(a, div);
+        });
+        return div;
+    };
+    /**
+     * Method that will toggle class of a element
+     * @param id id of element for which we want to toggle class
+     * @param className class Name
+     */
+    UxUtils.toggleClass = function (id, className) {
+        document.getElementById(id).classList.toggle(className);
+    };
+    /*
+  *   @desc Creates a primary button HTML element
+  *       e.g. - getButton("Click me", testClick, {"style1":"value1","style2":"value2"});
+  *       testClick is clickEvent function
+  *   @param title - string on button: string
+  *   @param clickEvent - function for onclick event for button (Optional): function()
+  *   @param attribute - css sttribute for button (Optional): Object{}
+  *   @return button element
+  */
+    UxUtils.getPrimaryButton = function (title, clickEvent, attributes, className) {
+        if (title === void 0) { title = null; }
+        if (clickEvent === void 0) { clickEvent = null; }
+        if (attributes === void 0) { attributes = null; }
+        var buttonDiv = this.getElement("button", attributes);
+        this.addAttribute(buttonDiv, { class: "primary-button " + className });
+        this.setText(buttonDiv, title, true);
+        this.addClickEvent(buttonDiv, clickEvent);
+        return buttonDiv;
+    };
+    /*
+    *   @desc Creates a secondary button HTML element
+    *       e.g. - getButton("Click me", testClick, {"style1":"value1","style2":"value2"});
+    *       testClick is clickEvent function
+    *   @param title - string on button: string
+    *   @param clickEvent - function for onclick event for button (Optional): function()
+    *   @param attribute - css sttribute for button (Optional): Object{}
+    *   @return button element
+    */
+    UxUtils.getSecondaryButton = function (title, clickEvent, attributes, className) {
+        if (title === void 0) { title = null; }
+        if (clickEvent === void 0) { clickEvent = null; }
+        if (attributes === void 0) { attributes = null; }
+        var buttonDiv = this.getElement("button", attributes);
+        this.addAttribute(buttonDiv, { class: "secondary-button " + className });
+        this.setText(buttonDiv, title, true);
+        this.addClickEvent(buttonDiv, clickEvent);
+        return buttonDiv;
+    };
     UxUtils.DEFAULT_SPACE_LENGTH = "10pt";
     UxUtils.DEFAULT_IMAGE_DIMEN = "50pt";
     UxUtils.spinnerCSSAdded = false;
@@ -1542,7 +1605,7 @@ var addDiv = UxUtils_1.UxUtils.getElement("div");
 var footerDiv = UxUtils_1.UxUtils.getElement("div");
 UxUtils_1.UxUtils.setClass(footerDiv, "footer");
 var errDiv = UxUtils_1.UxUtils.getElement("div");
-var itemsCount = 0; //As one item div is rendered on Page load.
+var itemsCount = 0;
 var actionId = "";
 var batchReq = [];
 var isDeleted = {};

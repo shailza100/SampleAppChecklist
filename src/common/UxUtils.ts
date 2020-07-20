@@ -546,4 +546,63 @@ export class UxUtils {
     this.addAttribute(inputelement, { "type": "title", "value": "", "id": id, placeholder: ph });
     return inputelement;
 }
+ /**
+     * Method to create dropdown 
+     * @param options options we want to show in dropdown contains (text and click event )
+     */
+    public static getDropDown(options) {
+      //  let div = UxUtils.getDiv({ class: "dropdown-content", id: "myDropdown" });
+        let div=UxUtils.getElement("div");
+        UxUtils.setClass(div,"dropdown-content");
+        div.id="myDropdown";
+        options.forEach(option => {
+            let a = UxUtils.getElement("a");
+            UxUtils.setText(a, option.text);
+           UxUtils.addClickEvent(a, option.callback);
+            UxUtils.addElement(a, div);
+        });
+        return div;
+    }
+
+    /**
+     * Method that will toggle class of a element 
+     * @param id id of element for which we want to toggle class 
+     * @param className class Name
+     */
+    public static toggleClass(id, className) {
+        document.getElementById(id).classList.toggle(className);
+    }
+
+     /*
+   *   @desc Creates a primary button HTML element
+   *       e.g. - getButton("Click me", testClick, {"style1":"value1","style2":"value2"});
+   *       testClick is clickEvent function
+   *   @param title - string on button: string
+   *   @param clickEvent - function for onclick event for button (Optional): function()
+   *   @param attribute - css sttribute for button (Optional): Object{}
+   *   @return button element
+   */
+  public static getPrimaryButton(title: string = null, clickEvent: () => void = null, attributes: {} = null, className?: string): HTMLElement {
+    var buttonDiv: HTMLElement = this.getElement("button", attributes);
+    this.addAttribute(buttonDiv, { class: "primary-button " + className });
+    this.setText(buttonDiv, title, true);
+    this.addClickEvent(buttonDiv, clickEvent);
+    return buttonDiv;
+}
+/*
+*   @desc Creates a secondary button HTML element 
+*       e.g. - getButton("Click me", testClick, {"style1":"value1","style2":"value2"});
+*       testClick is clickEvent function
+*   @param title - string on button: string
+*   @param clickEvent - function for onclick event for button (Optional): function()
+*   @param attribute - css sttribute for button (Optional): Object{}
+*   @return button element
+*/
+public static getSecondaryButton(title: string = null, clickEvent: () => void = null, attributes: {} = null, className?: string): HTMLElement {
+    var buttonDiv: HTMLElement = this.getElement("button", attributes);
+    this.addAttribute(buttonDiv, { class: "secondary-button " + className });
+    this.setText(buttonDiv, title, true);
+    this.addClickEvent(buttonDiv, clickEvent);
+    return buttonDiv;
+}
 }

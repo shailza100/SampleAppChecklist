@@ -12,7 +12,7 @@ UxUtils.setClass(footerDiv, "footer");
 let errDiv = UxUtils.getElement("div");
 
 
-let itemsCount = 0;//As one item div is rendered on Page load.
+let itemsCount = 0;
 let actionId = "";
 let batchReq = [];
 let isDeleted = {};

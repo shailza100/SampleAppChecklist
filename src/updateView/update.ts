@@ -2,6 +2,7 @@ import * as actionSDK from 'action-sdk-sunny';
 import { UxUtils } from '../common/UxUtils'
 import { Utils } from '../common/Utils';
 import { ChecklistColumnType, Status } from "../creationView/EnumContainer";
+import { Components } from '../common/Components';
 
 let root = document.getElementById("root");
 let bodyDiv = UxUtils.getElement("div");
@@ -48,6 +49,10 @@ function createBody() {
     UxUtils.setClass(bodyDiv, "scrollUpdateView");
 
     UxUtils.addElement(title, bodyDiv);
+
+    if (actionContext.userId == actionInstance.creatorId)
+    UxUtils.addElement(getChangeSettingView(),bodyDiv);//Add the Close/Delete checklist dropdown
+
     UxUtils.addElement(openItemDiv, bodyDiv);
     UxUtils.addElement(addItemDiv, bodyDiv);
     UxUtils.addElement(completeItemDiv, bodyDiv);
@@ -404,6 +409,26 @@ async function createCompleteItemsView() {
         }
     });
 }
+
+    function getChangeSettingView() {
+
+        let data = {
+         
+            close: {
+                text: "Close Checklist"
+            },
+            delete:{
+                text:"Delete Checklist"
+            }
+        }
+    
+        return Components.getChangeSettingOption(actionInstance, data);
+    }
+
+    
+
+
+
 
 //Returns Loader for Page
 function loaderforPage() {

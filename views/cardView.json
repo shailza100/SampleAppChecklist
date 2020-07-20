@@ -10,6 +10,15 @@
                 "wrap": true
             },
             {
+                "id": "expiry",
+                "type": "TextBlock",
+                "$when": "${not(equals(action.status, 'Active'))}",
+                "text": "Checklist Closed",
+                "color": "attention",
+                "size": "small",
+                "wrap": true
+            },
+            {
                 "id": "Title",
                 "type": "TextBlock",
                 "text": "${action.displayName}",
@@ -22,6 +31,7 @@
             {
                 "id": "Count",
                 "type": "TextBlock",
+                "$when": "${greater(count(dataRows),0)}",
                 "text": "Number of items in checklist :  ${if(not(empty(dataRows)),count(dataRows),0)}",
                 "size": "small",
                 "maxLines": 3,
@@ -33,7 +43,7 @@
                 "id": "OpenItems1",
                 "type": "TextBlock",
                 "$when": "${equals(count(dataRows),0)}",
-                "text": "No open items",
+                "text": "No item in checklist",
                 "size": "small",
                 "maxLines": 3,
                 "wrap": true,
@@ -43,7 +53,7 @@
             {
                 "id": "OpenItems2",
                 "type": "TextBlock",
-                "$when": "${greater(count(dataRows), 0)}",
+                "$when": "${and(equals(action.status, 'Active'),greater(count(dataRows), 0))}",
                 "text": "Open items",
                 "size": "small",
                 "maxLines": 3,
@@ -64,6 +74,7 @@
             {
                 "id": "LastModified",
                 "type": "TextBlock",
+                "$when": "${equals(action.status, 'Active')}",
                 "text": "Last updated by ${creator[0].displayName}",
                 "size": "small",
                 "weight": "bolder",
@@ -73,13 +84,25 @@
             }
         ],
         "actions": [{
-            "id": "EditChecklistButton",
-            "title": "Edit Checklist",
-            "command": "LaunchActionPackageView",
-            "parameters": {
-                "viewName": "UpdateView"
+                "id": "EditChecklistButton",
+                "$when": "${equals(action.status, 'Active')}",
+                "title": "Edit Checklist",
+                "command": "LaunchActionPackageView",
+                "parameters": {
+                    "viewName": "UpdateView"
+                }
+            },
+            {
+                "id": "ViewChecklistButton",
+                "$when": "${not(equals(action.status, 'Active'))}",
+                "title": "View Checklist",
+                "command": "LaunchActionPackageView",
+                "parameters": {
+                    "viewName": "UpdateView"
+                }
+
             }
-        }]
+        ]
     },
     "data": {
         "action": {
