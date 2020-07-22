@@ -9,7 +9,7 @@
         "termsOfUseUrl": "https://www.microsoft.com/app-tos"
     },
     "icon": "images/appIcon.png",
-    "version": "1.0.172",
+    "version": "1.0.176",
     "actionModel": "actionModel.json",
     "views": {
         "CardView": {
@@ -29,6 +29,7 @@
         }
 
     },
+    "showLoadingIndicator": true,
     "localizationInfo": {
         "defaultLocale": "en-us",
         "localeFiles": {

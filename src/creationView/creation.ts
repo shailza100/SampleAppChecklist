@@ -45,7 +45,8 @@ function createAction(actionPackageId) {
         rowsVisibility: actionSDK.Visibility.All,
         rowsEditable: true,
         canUserAddMultipleRows: true,
-        dataColumns: columns
+        dataColumns: columns,
+        attachments:[]
       },
     ],
   };
@@ -54,8 +55,10 @@ function createAction(actionPackageId) {
   let createAction = new actionSDK.CreateAction.Request(action);
   batchReq.push(createAction);
   console.info("CreateAction - Request: " + JSON.stringify(action));
-  getAddRowsRequests(actionId);
+  
+  getAddRowsRequests(actionId); //Get all add rows requests
   console.info("BatchRequest - " + JSON.stringify(batchReq));
+
   let batchRequest = new actionSDK.BaseApi.BatchRequest(batchReq);
   actionSDK.executeBatchApi(batchRequest)
     .then(function (batchResponse) {
@@ -73,7 +76,10 @@ function createAction(actionPackageId) {
 */
 
 function getAddRowsRequests(actionId) {
+  let addRows:actionSDK.ActionDataRow[]=[];
+  let updateRows:actionSDK.ActionDataRow[]=[];
   let row = {};
+
   for (let i = itemsCount - 1; i >= 0; i--) {
     let item = (<HTMLInputElement>document.getElementById(i.toString())).value;
     let itemId = i.toString();
@@ -99,12 +105,12 @@ function getAddRowsRequests(actionId) {
         row[ChecklistColumnType.completionUser.toString()] = userId;
         row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
       }
-      let addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
-      console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest))
-      batchReq.push(addRowsRequest);
+      addRows.push(dataRow);
       row = {};//Reset to push next row's data
     }
   }
+  let addOrUpdateRowsRequest = new actionSDK.AddOrUpdateActionDataRows.Request(addRows,updateRows);
+  batchReq.push(addOrUpdateRowsRequest);
 }
 
 /*
@@ -180,7 +186,9 @@ function submitFormNew() {
  * Render create view for checklist 
  */
 
-function OnPageLoad() {
+async function OnPageLoad() {
+  await actionSDK.executeApi(new actionSDK.HideLoadingIndicator.Request());
+
   UxUtils.addElement(UxUtils.getElement("hr"), root);
   let title = UxUtils.createTitle("Name your checklist", "ChecklistName");
   title.addEventListener("click", function () {

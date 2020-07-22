@@ -24,6 +24,8 @@ let countNewItems = 0;
 let isDeleted = {};
 let isCompleted = {};
 let userId = "";
+let addRows:actionSDK.ActionDataRow[]=[];
+let updateRows:actionSDK.ActionDataRow[]=[];
 
 
 OnPageLoad();
@@ -123,16 +125,22 @@ function updateDataRow() {
     if (countNewItems > 0) {
         createAddRowsRequests(actionInstance.id);
     }
+    //Create request for AddOrUpdateActionDataRows
+    let addOrUpdateRowReq = new actionSDK.AddOrUpdateActionDataRows.Request(addRows,updateRows);
+    batchUpdateReq.push(addOrUpdateRowReq);
+
     //Post update close result view
     let closeViewRequest = new actionSDK.CloseView.Request();
     batchUpdateReq.push(closeViewRequest);
+    
     let batchRequest = new actionSDK.BaseApi.BatchRequest(batchUpdateReq);
+    console.info("BatchRequest -:"+ JSON.stringify(batchRequest));
     actionSDK.executeBatchApi(batchRequest)
         .then(function (batchResponse: actionSDK.BaseApi.BatchResponse) {
-            console.info("BatchResponse- Update: " + JSON.stringify(batchResponse));
+            console.info("BatchResponse- : " + JSON.stringify(batchResponse));
         })
         .catch(function (error) {
-            console.error("BatchResponse- Update: " + JSON.stringify(error));
+            console.error("BatchResponse- Error: " + JSON.stringify(error));
         });
 }
 
@@ -164,9 +172,10 @@ function createAddRowsRequests(actionId) {
                 row[ChecklistColumnType.completionTime.toString()] = new Date().getTime().toString();
             }
 
-            let addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
-            console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
-            batchUpdateReq.push(addRowsRequest);
+          //  let addRowsRequest = new actionSDK.AddActionDataRow.Request(dataRow);
+            //console.info("AddActionRow Request -" + i + " " + JSON.stringify(addRowsRequest));
+           // batchUpdateReq.push(addRowsRequest);
+           addRows.push(dataRow);
             row = {};//Reset to push next row's data
         }
     }
@@ -201,11 +210,14 @@ function updateValueOfChecklistItem(row: actionSDK.ActionDataRow, newVal) {
     row.columnValues[ChecklistColumnType.latestEditTime.toString()] = new Date().getTime().toString();
 }
 
-//create a new upadte req
+//create a new update req
 function createUpdateRequest(row: actionSDK.ActionDataRow) {
-    let updateReq = new actionSDK.UpdateActionDataRow.Request(row);
+
+    /*let updateReq = new actionSDK.UpdateActionDataRow.Request(row);
     console.info("Update Row Request - " + JSON.stringify(updateReq));
-    batchUpdateReq.push(updateReq);
+    batchUpdateReq.push(updateReq);*/
+
+    updateRows.push(row);
 }
 
 //Get user details who completed the item
@@ -301,7 +313,6 @@ function createOpenItemsView() {
                     console.info("value of data value AFTER" + JSON.stringify(row));
                 }
             });
-
 
             let del = UxUtils.getElement("button");
             UxUtils.setClass(del, "button1");
