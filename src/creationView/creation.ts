@@ -39,6 +39,9 @@ function createAction(actionPackageId) {
       .value,
     expiryTime: new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
     properties: [],
+    permissions : {
+      [actionSDK.ActionPermission.DataRowsUpdate]: [actionSDK.ActionRole.Member]
+   },
     dataTables: [
       {
         name: "TestDataSet",
